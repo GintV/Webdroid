@@ -32,6 +32,7 @@ public class AccActivity extends AppCompatActivity {
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
         Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+        //you mom
         sm.registerListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
