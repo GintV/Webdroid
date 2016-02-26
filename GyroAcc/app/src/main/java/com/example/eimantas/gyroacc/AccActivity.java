@@ -37,7 +37,7 @@ public class AccActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 changeText(event.values[0], event.values[1], event.values[2]);
-                //
+                // pls
             }
 
             @Override
