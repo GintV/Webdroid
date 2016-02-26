@@ -39,8 +39,10 @@ public class AccActivity extends AppCompatActivity {
                 changeText(event.values[0], event.values[1], event.values[2]);
                 //lldlldlfldlfldlfldfl
                 //lldfldlfldfldlfld
-                //
+                //pls
                 //ldlfldlfldfldlfldlff
+
+
             }
 
             @Override
