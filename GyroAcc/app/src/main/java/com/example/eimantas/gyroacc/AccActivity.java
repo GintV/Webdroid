@@ -33,10 +33,32 @@ public class AccActivity extends AppCompatActivity {
         Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 
+
         sm.registerListener(new SensorEventListener() {
+
+            float[] gravity = null;
+            float[] real_acc = null;
+            final float alpha = 0.8f;
+
+
+
             @Override
             public void onSensorChanged(SensorEvent event) {
-                changeText(event.values[0], event.values[1], event.values[2]);
+                if (gravity == null) {
+                    gravity = new float[3];
+                    real_acc = new float[3];
+                    gravity[0] = gravity[1] = gravity[2] = 0f;
+                }
+
+                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+                real_acc[0] = event.values[0] - gravity[0];
+                real_acc[1] = event.values[1] - gravity[1];
+                real_acc[2] = event.values[2] - gravity[2];
+
+                changeText(real_acc[0], real_acc[1], real_acc[2]);
             }
 
             @Override
