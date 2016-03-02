@@ -14,9 +14,6 @@ public class CalibrateActivity extends AppCompatActivity {
     private TextView textViewX;
     private TextView textViewY;
     private TextView textViewZ;
-    private TextView textViewXMax;
-    private TextView textViewYMax;
-    private TextView textViewZMax;
 
 
     @Override
@@ -24,9 +21,9 @@ public class CalibrateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
 
-        textViewX = (TextView)findViewById(R.id.textViewGyroX);
-        textViewY = (TextView)findViewById(R.id.textViewGyroY);
-        textViewZ = (TextView)findViewById(R.id.textViewGyroZ);
+        textViewX = (TextView)findViewById(R.id.textViewCalibX);
+        textViewY = (TextView)findViewById(R.id.textViewCalibY);
+        textViewZ = (TextView)findViewById(R.id.textViewCalibZ);
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
         Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 

@@ -9,4 +9,64 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.eimantas.gyroacc.CalibrateActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="x"
+        android:id="@+id/textView15"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="y"
+        android:id="@+id/textView16"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView15"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="z"
+        android:id="@+id/textView17"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView16"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewCalibX"
+        android:gravity="right"
+        android:layout_above="@+id/textView16"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewCalibY"
+        android:gravity="right"
+        android:layout_below="@+id/textViewCalibX"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewCalibZ"
+        android:gravity="right"
+        android:layout_below="@+id/textViewCalibY"
+        android:layout_alignParentLeft="true" />
 </RelativeLayout>

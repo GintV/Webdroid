@@ -26,4 +26,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GyroActivity.class);
         startActivity(intent);
     }
+
+    public void openCalib(View view) {
+        Intent intent = new Intent(this, CalibrateActivity.class);
+        startActivity(intent);
+    }
 }
