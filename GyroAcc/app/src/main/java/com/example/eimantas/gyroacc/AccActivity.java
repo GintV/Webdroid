@@ -32,17 +32,11 @@ public class AccActivity extends AppCompatActivity {
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
         Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        //you mom
+
         sm.registerListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 changeText(event.values[0], event.values[1], event.values[2]);
-                //lldlldlfldlfldlfldfl
-                //lldfldlfldfldlfld
-                //pls
-                //ldlfldlfldfldlfldlff
-
-
             }
 
             @Override
