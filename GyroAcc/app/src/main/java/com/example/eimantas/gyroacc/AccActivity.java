@@ -46,7 +46,9 @@ public class AccActivity extends AppCompatActivity {
             static final float NS2S = 1.0f / 1000000000.0f;
 
             float[] gravity = null;
-            float[] velocity = null;
+            float velocityX = 0;
+            float velocityY = 0;
+            float velocityZ = 0;
             float[] last_values = null;
             float[] real_acc = null;
             long last_timestamp = 0;
@@ -57,10 +59,10 @@ public class AccActivity extends AppCompatActivity {
                 if (last_values == null) {
                     gravity = new float[3];
                     real_acc = new float[3];
-                    velocity = new float[3];
+                    //velocity = new float[3];
                     last_values = new float[3];
                     gravity[0] = gravity[1] = gravity[2] = 0f;
-                    velocity[0] = velocity[1] = velocity[2] = 0f;
+                    //velocity[0] = velocity[1] = velocity[2] = 0f;
                     last_values[0] = last_values[1] = last_values[2] = 0f;
                     last_timestamp = event.timestamp;
                 } else {
@@ -77,11 +79,11 @@ public class AccActivity extends AppCompatActivity {
 
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
-                    for (int index = 0; index < 3; ++index) {
-                        velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
-                    }
+                    //for (int index = 0; index < 3; index++) {
+                    //    velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
+                    //}
 
-                    changeSpeed(velocity[0], velocity[1], velocity[2]);
+                    changeSpeed(velocityX, velocityY, velocityZ);
 
                     System.arraycopy(real_acc, 0, last_values, 0, 3);
                     last_timestamp = event.timestamp;
