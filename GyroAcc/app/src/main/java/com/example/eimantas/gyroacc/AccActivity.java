@@ -22,6 +22,8 @@ public class AccActivity extends AppCompatActivity {
     private TextView textSpeedX;
     private TextView textSpeedY;
     private TextView textSpeedZ;
+    private TextView textViewSpeed;
+    private TextView textViewDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +39,10 @@ public class AccActivity extends AppCompatActivity {
         textSpeedX = (TextView) findViewById(R.id. textViewSpeedX);
         textSpeedY = (TextView) findViewById(R.id. textViewSpeedY);
         textSpeedZ = (TextView) findViewById(R.id. textViewSpeedZ);
+        textViewSpeed = (TextView) findViewById(R.id.textViewSpeed);
+        textViewDistance = (TextView) findViewById(R.id.textViewDist);
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
-        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         final float[] velocity = new float[3];
         velocity[0] = velocity[1] = velocity[2] = 0f;
@@ -51,6 +55,7 @@ public class AccActivity extends AppCompatActivity {
             float[] last_values = null;
             float[] real_acc = null;
             long last_timestamp = 0;
+            float distance = 0f;
             final float alpha = 0.8f;
 
             @Override
@@ -73,14 +78,20 @@ public class AccActivity extends AppCompatActivity {
                     real_acc[2] = event.values[2] - gravity[2];
 
                     changeText(real_acc[0], real_acc[1], real_acc[2]);
-
+/*
+                    real_acc[0] = event.values[0];
+                    real_acc[1] = event.values[1];
+                    real_acc[2] = event.values[2];
+                    changeText(real_acc[0], real_acc[1], real_acc[2]);
+*/
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
                     for (int index = 0; index < 3; index++) {
                         velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
                     }
-
-                    changeSpeed(velocity[0], velocity[1], velocity[2]);
+                    float totalSpeed = (float) Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1] + velocity[2] * velocity[2]);
+                    distance += dt * totalSpeed;
+                    changeSpeed(velocity[0], velocity[1], velocity[2], totalSpeed, distance);
 
                     System.arraycopy(real_acc, 0, last_values, 0, 3);
                     last_timestamp = event.timestamp;
@@ -111,10 +122,12 @@ public class AccActivity extends AppCompatActivity {
         }
     }
 
-    protected void changeSpeed(float speedX, float speedY, float speedZ) {
+    protected void changeSpeed(float speedX, float speedY, float speedZ, float speedTotal, float distance) {
         textSpeedX.setText(String.format("%2.2f", speedX));
         textSpeedY.setText(String.format("%2.2f", speedY));
         textSpeedZ.setText(String.format("%2.2f", speedZ));
+        textViewSpeed.setText(String.format("%2.2f", speedTotal));
+        textViewDistance.setText(String.format("%2.2f", distance));
     }
 
     public void resetMax(View view) {

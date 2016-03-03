@@ -235,4 +235,26 @@
         android:layout_toStartOf="@+id/textViewAccZMax"
         android:layout_alignRight="@+id/textViewSpeedY"
         android:layout_alignEnd="@+id/textViewSpeedY" />
+
+    <TextView
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewSpeed"
+        android:layout_below="@+id/textViewSpeedZ"
+        android:layout_alignRight="@+id/textViewSpeedZ"
+        android:layout_alignEnd="@+id/textViewSpeedZ"
+        android:gravity="right" />
+
+    <TextView
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewDist"
+        android:layout_below="@+id/textViewSpeed"
+        android:layout_alignRight="@+id/textViewSpeed"
+        android:layout_alignEnd="@+id/textViewSpeed"
+        android:gravity="right" />
 </RelativeLayout>
