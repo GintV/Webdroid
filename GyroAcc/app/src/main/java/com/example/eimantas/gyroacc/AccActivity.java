@@ -62,28 +62,30 @@ public class AccActivity extends AppCompatActivity {
                     gravity[0] = gravity[1] = gravity[2] = 0f;
                     velocity[0] = velocity[1] = velocity[2] = 0f;
                     last_values[0] = last_values[1] = last_values[2] = 0f;
+                    last_timestamp = event.timestamp;
+                } else {
+
+                    gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+                    gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+                    gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+                    real_acc[0] = event.values[0] - gravity[0];
+                    real_acc[1] = event.values[1] - gravity[1];
+                    real_acc[2] = event.values[2] - gravity[2];
+
+                    changeText(real_acc[0], real_acc[1], real_acc[2]);
+
+                    float dt = (event.timestamp - last_timestamp) * NS2S;
+
+                    for (int index = 0; index < 3; ++index) {
+                        velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
+                    }
+
+                    changeSpeed(velocity[0], velocity[1], velocity[2]);
+
+                    System.arraycopy(real_acc, 0, last_values, 0, 3);
+                    last_timestamp = event.timestamp;
                 }
-
-                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-                real_acc[0] = event.values[0] - gravity[0];
-                real_acc[1] = event.values[1] - gravity[1];
-                real_acc[2] = event.values[2] - gravity[2];
-
-                changeText(real_acc[0], real_acc[1], real_acc[2]);
-
-                float dt = (event.timestamp - last_timestamp) * NS2S;
-
-                for (int index = 0; index < 3; ++index) {
-                    velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
-                }
-
-                changeSpeed(velocity[0], velocity[1], velocity[2]);
-
-                System.arraycopy(real_acc, 0, last_values, 0, 3);
-                last_timestamp = event.timestamp;
 
             }
 
