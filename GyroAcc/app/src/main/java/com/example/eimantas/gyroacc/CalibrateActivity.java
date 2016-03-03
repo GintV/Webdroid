@@ -42,7 +42,7 @@ public class CalibrateActivity extends AppCompatActivity {
             // with t, the low-pass filter's time-constant
             // and dT, the event delivery rate
 
-            final float alpha = 0.8f;
+            final float alpha = 0.999f;
 
 
             @Override

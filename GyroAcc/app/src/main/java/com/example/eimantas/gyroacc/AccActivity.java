@@ -57,6 +57,8 @@ public class AccActivity extends AppCompatActivity {
                 if (last_values == null) {
                     gravity = new float[3];
                     real_acc = new float[3];
+                    velocity = new float[3];
+                    last_values = new float[3];
                     gravity[0] = gravity[1] = gravity[2] = 0f;
                     velocity[0] = velocity[1] = velocity[2] = 0f;
                     last_values[0] = last_values[1] = last_values[2] = 0f;
@@ -109,9 +111,9 @@ public class AccActivity extends AppCompatActivity {
     }
 
     protected void changeSpeed(float speedX, float speedY, float speedZ) {
-        textSpeedX.setText(String.format("%2.2f"));
-        textSpeedY.setText(String.format("%2.2f"));
-        textSpeedZ.setText(String.format("%2.2f"));
+        textSpeedX.setText(String.format("%2.2f", speedX));
+        textSpeedY.setText(String.format("%2.2f", speedY));
+        textSpeedZ.setText(String.format("%2.2f", speedZ));
     }
 
     public void resetMax(View view) {
