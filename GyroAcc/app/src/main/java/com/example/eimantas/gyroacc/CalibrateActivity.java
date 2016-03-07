@@ -34,7 +34,7 @@ public class CalibrateActivity extends AppCompatActivity {
         webSocketTimer = new Timer();
 
         try {
-            webSocket = new WebSocketControl(new URI("ws://webdroid.cf:8080"), (TextView) findViewById(R.id.textViewCnt));
+            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:3000"), (TextView) findViewById(R.id.textViewCnt));
             webSocket.connect();
             webSocketTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
