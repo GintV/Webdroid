@@ -23,6 +23,7 @@ public class WebSocketControl extends WebSocketClient {
     public WebSocketControl(URI serverURI, TextView textView) {
         super(serverURI);
         messageCounter = textView;
+        messageCounter.setText("0");
     }
 
     @Override

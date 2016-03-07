@@ -4,10 +4,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CalibrateActivity extends AppCompatActivity {
 
@@ -16,12 +22,34 @@ public class CalibrateActivity extends AppCompatActivity {
     private TextView textViewZ;
     private SensorManager sm;
     private SensorEventListener accListener;
+    private Timer webSocketTimer;
+    private WebSocketControl webSocket;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
+
+        webSocketTimer = new Timer();
+
+        try {
+            webSocket = new WebSocketControl(new URI("ws://webdroid.cf:8080"), (TextView) findViewById(R.id.textViewCnt));
+            webSocket.connect();
+            webSocketTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        webSocket.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                    }
+                    catch (Exception ex) {
+
+                    }
+                }
+            }, 0, 34);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         textViewX = (TextView) findViewById(R.id.textViewCalibX);
         textViewY = (TextView) findViewById(R.id.textViewCalibY);
@@ -96,6 +124,8 @@ public class CalibrateActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         sm.unregisterListener(accListener);
+        webSocketTimer.cancel();
+        webSocket.close();
     }
 
     protected void changeText(float x, float y, float z) {
