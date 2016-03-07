@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -15,6 +16,7 @@ public class ChatActivity extends AppCompatActivity {
     private WebSocketControl webSocket;
     private EditText messageBox;
     private TextView chatBox;
+    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,7 @@ public class ChatActivity extends AppCompatActivity {
 
         messageBox = (EditText) findViewById(R.id.editTextMessage);
         chatBox = (TextView) findViewById(R.id.textViewChatBox);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
 
         messageBox.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -62,6 +65,7 @@ public class ChatActivity extends AppCompatActivity {
             chatBox.append("Error: " + ex.toString());
         }
         messageBox.setText("");
+        scrollView.fullScroll(View.FOCUS_DOWN);
     }
 
     protected void messageReceived(String message) {
@@ -72,5 +76,6 @@ public class ChatActivity extends AppCompatActivity {
                 chatBox.append("Server: " + msg + System.getProperty("line.separator"));
             }
         });
+        scrollView.fullScroll(View.FOCUS_DOWN);
     }
 }
