@@ -14,6 +14,8 @@ public class CalibrateActivity extends AppCompatActivity {
     private TextView textViewX;
     private TextView textViewY;
     private TextView textViewZ;
+    private SensorManager sm;
+    private SensorEventListener accListener;
 
 
     @Override
@@ -21,14 +23,12 @@ public class CalibrateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
 
-        textViewX = (TextView)findViewById(R.id.textViewCalibX);
-        textViewY = (TextView)findViewById(R.id.textViewCalibY);
-        textViewZ = (TextView)findViewById(R.id.textViewCalibZ);
-        SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+        textViewX = (TextView) findViewById(R.id.textViewCalibX);
+        textViewY = (TextView) findViewById(R.id.textViewCalibY);
+        textViewZ = (TextView) findViewById(R.id.textViewCalibZ);
+        sm = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-
-        sm.registerListener(new SensorEventListener() {
+        accListener = new SensorEventListener() {
 
             static final float NS2S = 1.0f / 1000000000.0f;
             float[] last_values = null;
@@ -86,7 +86,16 @@ public class CalibrateActivity extends AppCompatActivity {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
             }
-        }, acc, SensorManager.SENSOR_DELAY_FASTEST);
+        };
+
+
+        sm.registerListener(accListener, acc, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sm.unregisterListener(accListener);
     }
 
     protected void changeText(float x, float y, float z) {
