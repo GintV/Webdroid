@@ -1,15 +1,15 @@
 package com.example.eimantas.gyroacc;
 
+import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-public class GyroActivity extends AppCompatActivity {
+public class GyroActivity extends Activity {
 
     private TextView textViewX;
     private TextView textViewY;
