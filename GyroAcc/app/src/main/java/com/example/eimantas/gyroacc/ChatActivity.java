@@ -1,7 +1,7 @@
 package com.example.eimantas.gyroacc;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends Activity {
 
     private WebSocketControl webSocket;
     private EditText messageBox;

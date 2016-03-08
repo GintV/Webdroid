@@ -1,13 +1,12 @@
 package com.example.eimantas.gyroacc;
 
+import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -15,7 +14,7 @@ import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CalibrateActivity extends AppCompatActivity {
+public class CalibrateActivity extends Activity {
 
     private TextView textViewX;
     private TextView textViewY;
