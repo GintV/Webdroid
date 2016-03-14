@@ -33,7 +33,7 @@ public class CalibrateActivity extends Activity {
         webSocketTimer = new Timer();
 
         try {
-            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:3000"), (TextView) findViewById(R.id.textViewCnt));
+            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"), (TextView) findViewById(R.id.textViewCnt));
             webSocket.connect();
             webSocketTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
