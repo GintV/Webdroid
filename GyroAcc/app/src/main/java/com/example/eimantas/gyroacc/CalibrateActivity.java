@@ -102,6 +102,7 @@ public class CalibrateActivity extends Activity {
                     velocity[0] = velocity[1] = velocity[2] = 0f;
                     position[0] = position[1] = position[2] = 0f;
                 }
+
                 changeText(position[0], position[1], position[2]);
 
 

@@ -22,8 +22,11 @@ public class AccActivity extends Activity {
     private TextView textSpeedX;
     private TextView textSpeedY;
     private TextView textSpeedZ;
-    private TextView textViewSpeed;
-    private TextView textViewDistance;
+
+    private TextView textPosX;
+    private TextView textPosY;
+    private TextView textPosZ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,36 +42,47 @@ public class AccActivity extends Activity {
         textSpeedX = (TextView) findViewById(R.id. textViewSpeedX);
         textSpeedY = (TextView) findViewById(R.id. textViewSpeedY);
         textSpeedZ = (TextView) findViewById(R.id. textViewSpeedZ);
-        textViewSpeed = (TextView) findViewById(R.id.textViewSpeed);
-        textViewDistance = (TextView) findViewById(R.id.textViewDist);
-        SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
-        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        final float[] velocity = new float[3];
-        velocity[0] = velocity[1] = velocity[2] = 0f;
+        textPosX = (TextView) findViewById(R.id.textViewPosX);
+        textPosY = (TextView) findViewById(R.id.textViewPosY);
+        textPosZ = (TextView) findViewById(R.id.textViewPosZ);
+
+        SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sm.registerListener(new SensorEventListener() {
             static final float NS2S = 1.0f / 1000000000.0f;
 
             float[] gravity = null;
 
-            float[] last_values = null;
+            float[] last_val_acc = null;
             float[] real_acc = null;
+
+            float[] last_val_velo = null;
+            float[] velocity = null;
+
+            float[] position = null;
             long last_timestamp = 0;
-            float distance = 0f;
-            final float alpha = 0.8f;
+
+            final float alpha = 0.6f;
 
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (last_values == null) {
+                if (last_val_acc == null) {
                     gravity = new float[3];
                     real_acc = new float[3];
-                    last_values = new float[3];
+                    last_val_acc = new float[3];
+
+                    last_val_velo = new float[3];
+                    velocity = new float[3];
+                    position = new float[3];
+
                     gravity[0] = gravity[1] = gravity[2] = 0f;
-                    last_values[0] = last_values[1] = last_values[2] = 0f;
+                    last_val_acc[0] = last_val_acc[1] = last_val_acc[2] = 0f;
+                    last_val_velo[0] = last_val_velo[1] = last_val_velo[2] = 0f;
+
                     last_timestamp = event.timestamp;
                 } else {
-
                     gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
                     gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
                     gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
@@ -78,22 +92,22 @@ public class AccActivity extends Activity {
                     real_acc[2] = event.values[2] - gravity[2];
 
                     changeText(real_acc[0], real_acc[1], real_acc[2]);
-/*
-                    real_acc[0] = event.values[0];
-                    real_acc[1] = event.values[1];
-                    real_acc[2] = event.values[2];
-                    changeText(real_acc[0], real_acc[1], real_acc[2]);
-*/
+
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
                     for (int index = 0; index < 3; index++) {
-                        velocity[index] += (real_acc[index] + last_values[index]) / 2 * dt;
-                    }
-                    float totalSpeed = (float) Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1] + velocity[2] * velocity[2]);
-                    distance += dt * totalSpeed;
-                    changeSpeed(velocity[0], velocity[1], velocity[2], totalSpeed, distance);
+                        if (real_acc[index] > 0.2f) {
+                            velocity[index] += (real_acc[index] + last_val_acc[index]) / 2 * dt;
+                        }
 
-                    System.arraycopy(real_acc, 0, last_values, 0, 3);
+                        position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
+                    }
+
+
+                    change(velocity[0], velocity[1], velocity[2], position[0], position[1], position[2]);
+
+                    System.arraycopy(real_acc, 0, last_val_acc, 0, 3);
+                    System.arraycopy(velocity, 0, last_val_velo, 0, 3);
                     last_timestamp = event.timestamp;
                 }
 
@@ -122,17 +136,25 @@ public class AccActivity extends Activity {
         }
     }
 
-    protected void changeSpeed(float speedX, float speedY, float speedZ, float speedTotal, float distance) {
+    protected void change(float speedX, float speedY, float speedZ, float posX, float posY, float posZ) {
         textSpeedX.setText(String.format("%2.2f", speedX));
         textSpeedY.setText(String.format("%2.2f", speedY));
         textSpeedZ.setText(String.format("%2.2f", speedZ));
-        textViewSpeed.setText(String.format("%2.2f", speedTotal));
-        textViewDistance.setText(String.format("%2.2f", distance));
+
+        textPosX.setText(String.format("%2.2f", posX));
+        textPosY.setText(String.format("%2.2f", posY));
+        textPosZ.setText(String.format("%2.2f", posZ));
     }
 
     public void resetMax(View view) {
         textViewXMax.setText("0.00");
         textViewYMax.setText("0.00");
         textViewZMax.setText("0.00");
+
+        //textSpeedX.setText("0.00");
+        //textSpeedY.setText("0.00");
+        //textSpeedZ.setText("0.00");
+
+
     }
 }

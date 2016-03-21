@@ -149,7 +149,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="reset"
+        android:text="RESET"
         android:id="@+id/buttonAccRst"
         android:layout_alignTop="@+id/textViewAccXMax"
         android:layout_alignParentRight="true"
@@ -178,7 +178,8 @@
         android:id="@+id/textView19"
         android:layout_below="@+id/textView18"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="23dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -207,10 +208,9 @@
         android:text="0.00"
         android:id="@+id/textViewSpeedX"
         android:gravity="right"
-        android:layout_toRightOf="@+id/textView18"
         android:layout_alignTop="@+id/textView19"
-        android:layout_toStartOf="@+id/buttonAccRst"
-        android:layout_toLeftOf="@+id/buttonAccRst" />
+        android:layout_toRightOf="@+id/textView4"
+        android:layout_toEndOf="@+id/textView4" />
 
     <TextView
         android:layout_width="150sp"
@@ -237,24 +237,78 @@
         android:layout_alignEnd="@+id/textViewSpeedY" />
 
     <TextView
-        android:layout_width="150sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="0.00"
-        android:id="@+id/textViewSpeed"
-        android:layout_below="@+id/textViewSpeedZ"
-        android:layout_alignRight="@+id/textViewSpeedZ"
-        android:layout_alignEnd="@+id/textViewSpeedZ"
-        android:gravity="right" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Pozicija"
+        android:id="@+id/textView23"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/textView21"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="150sp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="0.00"
-        android:id="@+id/textViewDist"
-        android:layout_below="@+id/textViewSpeed"
-        android:layout_alignRight="@+id/textViewSpeed"
-        android:layout_alignEnd="@+id/textViewSpeed"
-        android:gravity="right" />
+        android:id="@+id/textViewPosX"
+        android:gravity="right"
+        android:layout_below="@+id/textView23"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="27dp" />
+
+    <TextView
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewPosY"
+        android:gravity="right"
+        android:layout_below="@+id/textViewPosX"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="150sp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewPosZ"
+        android:gravity="right"
+        android:layout_below="@+id/textViewPosY"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="posX"
+        android:id="@+id/textView27"
+        android:layout_alignBaseline="@+id/textViewPosX"
+        android:layout_alignBottom="@+id/textViewPosX"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="posY"
+        android:id="@+id/textView28"
+        android:layout_below="@+id/textViewPosX"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="posZ"
+        android:id="@+id/textView29"
+        android:layout_alignBaseline="@+id/textViewPosZ"
+        android:layout_alignBottom="@+id/textViewPosZ"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
