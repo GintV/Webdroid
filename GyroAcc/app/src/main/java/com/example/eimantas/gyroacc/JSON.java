@@ -1,0 +1,27 @@
+package com.example.eimantas.gyroacc;
+
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
+/**
+ * Created by Gintaras on 2016.03.22.
+ */
+
+public class JSON {
+    private String json;
+
+    public JSON(String type, String data) {
+        this.json = String.valueOf("{\n " +
+                "\"type\": \"" + StringEscapeUtils.escapeJava(type) + " \", \n" +
+                "\"data\": \"" + StringEscapeUtils.escapeJava(data) + " \", \n" +
+                "}");
+    }
+
+    public String getJSON() {
+        return this.json;
+    }
+
+    public void setJSON(String json) {
+        this.json = new String(json);
+    }
+}

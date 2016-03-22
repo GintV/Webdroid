@@ -98,9 +98,14 @@ public class AccActivity extends Activity {
                     for (int index = 0; index < 3; index++) {
                         if (real_acc[index] > 0.2f) {
                             velocity[index] += (real_acc[index] + last_val_acc[index]) / 2 * dt;
+                            position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
+                        }
+                        else if (real_acc[index] > 3.0f) {
+                            velocity[index] += (3.0f + last_val_acc[index]) / 2 * dt;
+                            position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                         }
 
-                        position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
+                       // position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                     }
 
 
@@ -110,14 +115,13 @@ public class AccActivity extends Activity {
                     System.arraycopy(velocity, 0, last_val_velo, 0, 3);
                     last_timestamp = event.timestamp;
                 }
-
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
             }
-        }, acc, SensorManager.SENSOR_DELAY_FASTEST);
+        }, acc, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void changeText(float x, float y, float z) {
@@ -125,13 +129,13 @@ public class AccActivity extends Activity {
         textViewY.setText(String.format("%2.2f", y));
         textViewZ.setText(String.format("%2.2f", z));
 
-        if (Float.compare(Float.parseFloat(textViewXMax.getText().toString()), x) < 0) {
+        if (Float.compare(Float.parseFloat(textViewXMax.getText().toString()), x) > 0) {
             textViewXMax.setText((String.format("%2.2f", x)));
         }
-        if (Float.compare(Float.parseFloat(textViewYMax.getText().toString()), y) < 0) {
+        if (Float.compare(Float.parseFloat(textViewYMax.getText().toString()), y) > 0) {
             textViewYMax.setText((String.format("%2.2f", y)));
         }
-        if (Float.compare(Float.parseFloat(textViewZMax.getText().toString()), z) < 0) {
+        if (Float.compare(Float.parseFloat(textViewZMax.getText().toString()), z) > 0) {
             textViewZMax.setText((String.format("%2.2f", z)));
         }
     }
