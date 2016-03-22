@@ -56,8 +56,8 @@ public class ChatActivity extends Activity {
         }
     }
 
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         webSocket.close();
     }
 

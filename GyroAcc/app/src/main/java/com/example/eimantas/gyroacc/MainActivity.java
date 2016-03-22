@@ -7,10 +7,14 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 
+import java.util.Locale;
+
 public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Locale.setDefault(Locale.US);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);

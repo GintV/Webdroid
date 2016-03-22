@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 
 public class AccActivity extends Activity {
 
@@ -48,12 +50,10 @@ public class AccActivity extends Activity {
         textPosZ = (TextView) findViewById(R.id.textViewPosZ);
 
         SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
-        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         sm.registerListener(new SensorEventListener() {
             static final float NS2S = 1.0f / 1000000000.0f;
-
-            float[] gravity = null;
 
             float[] last_val_acc = null;
             float[] real_acc = null;
@@ -64,12 +64,10 @@ public class AccActivity extends Activity {
             float[] position = null;
             long last_timestamp = 0;
 
-            final float alpha = 0.6f;
-
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if (last_val_acc == null) {
-                    gravity = new float[3];
+
                     real_acc = new float[3];
                     last_val_acc = new float[3];
 
@@ -77,41 +75,32 @@ public class AccActivity extends Activity {
                     velocity = new float[3];
                     position = new float[3];
 
-                    gravity[0] = gravity[1] = gravity[2] = 0f;
+
                     last_val_acc[0] = last_val_acc[1] = last_val_acc[2] = 0f;
                     last_val_velo[0] = last_val_velo[1] = last_val_velo[2] = 0f;
 
                     last_timestamp = event.timestamp;
                 } else {
-                    gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-                    gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-                    gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
 
-                    real_acc[0] = event.values[0] - gravity[0];
-                    real_acc[1] = event.values[1] - gravity[1];
-                    real_acc[2] = event.values[2] - gravity[2];
-
-                    changeText(real_acc[0], real_acc[1], real_acc[2]);
+                    changeText(event.values[0], event.values[1], event.values[2]);
 
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
                     for (int index = 0; index < 3; index++) {
-                        if (real_acc[index] > 0.2f) {
-                            velocity[index] += (real_acc[index] + last_val_acc[index]) / 2 * dt;
+                        if (event.values[index] > 0.2f) {
+                            velocity[index] += (event.values[index] + last_val_acc[index]) / 2 * dt;
                             position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                         }
                         else if (real_acc[index] > 3.0f) {
                             velocity[index] += (3.0f + last_val_acc[index]) / 2 * dt;
                             position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                         }
-
-                       // position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                     }
 
 
                     change(velocity[0], velocity[1], velocity[2], position[0], position[1], position[2]);
 
-                    System.arraycopy(real_acc, 0, last_val_acc, 0, 3);
+                    System.arraycopy(event.values, 0, last_val_acc, 0, 3);
                     System.arraycopy(velocity, 0, last_val_velo, 0, 3);
                     last_timestamp = event.timestamp;
                 }

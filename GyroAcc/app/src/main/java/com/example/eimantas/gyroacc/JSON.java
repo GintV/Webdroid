@@ -10,11 +10,14 @@ import org.apache.commons.lang3.StringEscapeUtils;
 public class JSON {
     private String json;
 
+    public JSON() {
+        this.json = "{}";
+    }
     public JSON(String type, String data) {
-        this.json = String.valueOf("{\n " +
+        this.json = "{\n " +
                 "\"type\": \"" + StringEscapeUtils.escapeJava(type) + " \", \n" +
                 "\"data\": \"" + StringEscapeUtils.escapeJava(data) + " \", \n" +
-                "}");
+                "}";
     }
 
     public String getJSON() {
@@ -22,6 +25,6 @@ public class JSON {
     }
 
     public void setJSON(String json) {
-        this.json = new String(json);
+        this.json = json;
     }
 }
