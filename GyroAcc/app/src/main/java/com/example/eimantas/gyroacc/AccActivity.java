@@ -87,10 +87,11 @@ public class AccActivity extends Activity {
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
                     for (int index = 0; index < 3; index++) {
-                        //if (event.values[index] > 0.2f) {
+                        if (Math.abs(event.values[index]) > 0.2f)
                             velocity[index] += (event.values[index] + last_val_acc[index]) / 2 * dt;
-                            position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
-                        //}
+
+
+                        position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                         //else if (real_acc[index] > 3.0f) {
                             //velocity[index] += (3.0f + last_val_acc[index]) / 2 * dt;
                             //position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
