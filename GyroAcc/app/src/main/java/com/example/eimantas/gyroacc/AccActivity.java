@@ -87,9 +87,8 @@ public class AccActivity extends Activity {
                     float dt = (event.timestamp - last_timestamp) * NS2S;
 
                     for (int index = 0; index < 3; index++) {
-                        if (Math.abs(event.values[index]) > 0.2f)
-                            velocity[index] += (event.values[index] + last_val_acc[index]) / 2 * dt;
-
+                        //if (Math.abs(event.values[index]) > 0.2f)
+                        velocity[index] += (event.values[index] + last_val_acc[index]) / 2 * dt;
 
                         position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
                         //else if (real_acc[index] > 3.0f) {
@@ -111,7 +110,7 @@ public class AccActivity extends Activity {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
             }
-        }, acc, SensorManager.SENSOR_DELAY_NORMAL);
+        }, acc, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     protected void changeText(float x, float y, float z) {
