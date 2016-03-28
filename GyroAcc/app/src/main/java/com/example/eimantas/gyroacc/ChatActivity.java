@@ -50,7 +50,7 @@ public class ChatActivity extends Activity {
         });
 
         try {
-            openWebSocker(new URI("ws://218.gaikaz.tk:80"));
+            openWebSocket(new URI("ws://218.gaikaz.tk:80"));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -93,7 +93,7 @@ public class ChatActivity extends Activity {
         });
     }
 
-    protected void openWebSocker(URI uri) {
+    protected void openWebSocket(URI uri) {
         webSocket = new WebSocketControl(uri) {
            @Override
            public void onMessage(String message) {
@@ -120,7 +120,7 @@ public class ChatActivity extends Activity {
                 if (webSocket.getURI().toString().compareTo(uriStr) != 0) {
                     try {
                         URI replacementURI = new URI(uriStr);
-                        openWebSocker(replacementURI);
+                        openWebSocket(replacementURI);
                     } catch (URISyntaxException e) {
                         AlertDialog.Builder diaFailed = new AlertDialog.Builder(getApplicationContext());
                         diaFailed.setMessage("Bad URI");

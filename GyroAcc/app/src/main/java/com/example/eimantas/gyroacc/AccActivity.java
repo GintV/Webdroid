@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Locale;
-
-
 public class AccActivity extends Activity {
 
     private TextView textViewX;
