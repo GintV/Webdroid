@@ -18,8 +18,8 @@ import java.util.TimerTask;
 public class TestActivity extends Activity {
 
     private static long SEND_RATE = 34;
-    private static float DRIFT_COMPENSATION = 0.005f;
-    private static float MIN_SIGNIFICANT_VALUE = 0.01f;
+    private static float DRIFT_COMPENSATION = 0.001f;
+    private static float MIN_SIGNIFICANT_VALUE = 0.005f;
 
     private TextView textViewPosX;
     private TextView textViewPosY;
@@ -39,6 +39,7 @@ public class TestActivity extends Activity {
     protected int rotCount;
     protected float[] currSpeed;
     protected float[] currPos;
+    protected float[] currRot;
     protected Timer timer;
     protected WebSocketControl webSocket;
 
@@ -138,6 +139,7 @@ public class TestActivity extends Activity {
                 rotValues[i] = 0;
             }
         }
+        System.arraycopy(rotData, 0, currRot, 0, 3);
     }
 
     protected String formatData() {
@@ -158,11 +160,15 @@ public class TestActivity extends Activity {
         textViewPosX.setText(String.format(Locale.US, "%2.2f", currPos[0]));
         textViewPosY.setText(String.format(Locale.US, "%2.2f", currPos[1]));
         textViewPosZ.setText(String.format(Locale.US, "%2.2f", currPos[2]));
+        textViewRotX.setText(String.format(Locale.US, "%2.2f", currRot[0]));
+        textViewRotY.setText(String.format(Locale.US, "%2.2f", currRot[1]));
+        textViewRotZ.setText(String.format(Locale.US, "%2.2f", currRot[2]));
     }
 
     public void reset(View view) {
         currSpeed = new float[3];
         currPos = new float[3];
+        currRot = new float[3];
         showData();
     }
 
@@ -176,6 +182,7 @@ public class TestActivity extends Activity {
                 @Override
                 public void run() {
                     calculateAccData();
+                    calculateRotData();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
