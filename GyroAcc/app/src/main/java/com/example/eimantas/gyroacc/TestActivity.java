@@ -178,6 +178,7 @@ public class TestActivity extends Activity {
         try {
             webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
             webSocket.connect();
+            timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {

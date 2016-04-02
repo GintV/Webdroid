@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -20,8 +21,12 @@ public class CalibrateActivity extends Activity {
     private TextView textViewX;
     private TextView textViewY;
     private TextView textViewZ;
+    private Sensor acc;
     private SensorManager sm;
     private SensorEventListener accListener;
+    protected boolean in;
+    protected float[] I;
+    protected float[] O;
     private Timer webSocketTimer;
     private WebSocketControl webSocket;
 
@@ -34,6 +39,10 @@ public class CalibrateActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
+
+        I = new float[9];
+        O = new float[9];
+        in = false;
 
         webSocketTimer = new Timer();
 
@@ -64,20 +73,16 @@ public class CalibrateActivity extends Activity {
         textViewY = (TextView) findViewById(R.id.textViewCalibY);
         textViewZ = (TextView) findViewById(R.id.textViewCalibZ);
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
-        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        acc = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         accListener = new SensorEventListener() {
 
-          //  static final float NS2S = 1.0f / 1000000000.0f;
-          //  float[] last_values = null;
-          //  float[] velocity = null;
-          //  float[] position = null;
-           // float[] gravity = null;
-           // float[] real_acc = null;
-           // long last_timestamp = 0;
-                boolean in = false;
-            float[] R = new float[9];
-            float[] I = new float[9];
-            float[] O = new float[9];
+            //  static final float NS2S = 1.0f / 1000000000.0f;
+            //  float[] last_values = null;
+            //  float[] velocity = null;
+            //  float[] position = null;
+            // float[] gravity = null;
+            // float[] real_acc = null;
+            // long last_timestamp = 0;
 
             // alpha is calculated as t / (t + dT)
             // with t, the low-pass filter's time-constant
@@ -88,6 +93,8 @@ public class CalibrateActivity extends Activity {
 
             @Override
             public void onSensorChanged(SensorEvent event) {
+
+                calculateRotation(event.values);
 
                 /*if (last_values != null) {
                     float dt = (event.timestamp - last_timestamp) * NS2S;
@@ -118,48 +125,6 @@ public class CalibrateActivity extends Activity {
                 }*/
 
 
-                sm.getRotationMatrixFromVector(R, event.values);
-
-                if(!in) {
-                    in = true;
-
-                    float det = R[0]*R[4]*R[8] + R[2]*R[3]*R[7] + R[1]*R[5]*R[6] -
-                            R[2]*R[4]*R[6] - R[1]*R[3]*R[8] - R[0]*R[5]*R[7];
-
-                    I[0] = (R[4]*R[8] - R[5]*R[7]) / det;
-                    I[1] = (R[2]*R[7] - R[1]*R[8]) / det;
-                    I[2] = (R[1]*R[5] - R[2]*R[4]) / det;
-                    I[3] = (R[5]*R[6] - R[3]*R[8]) / det;
-                    I[4] = (R[0]*R[8] - R[2]*R[6]) / det;
-                    I[5] = (R[2]*R[3] - R[0]*R[5]) / det;
-                    I[6] = (R[3]*R[7] - R[4]*R[6]) / det;
-                    I[7] = (R[1]*R[6] - R[0]*R[7]) / det;
-                    I[8] = (R[0]*R[4] - R[1]*R[3]) / det;
-
-                }
-
-                O[0] = I[0]*R[0] + I[1]*R[3] + I[2]*R[6];
-                O[1] = I[0]*R[1] + I[1]*R[4] + I[2]*R[7];
-                O[2] = I[0]*R[2] + I[1]*R[5] + I[2]*R[8];
-
-                O[3] = I[3]*R[0] + I[4]*R[3] + I[5]*R[6];
-                O[4] = I[3]*R[1] + I[4]*R[4] + I[5]*R[7];
-                O[5] = I[3]*R[2] + I[4]*R[5] + I[5]*R[8];
-
-                O[6] = I[6]*R[0] + I[7]*R[3] + I[8]*R[6];
-                O[7] = I[6]*R[1] + I[7]*R[4] + I[8]*R[7];
-                O[8] = I[6]*R[2] + I[7]*R[5] + I[8]*R[8];
-
-
-                double yawn = Math.atan2(O[3], O[0]) * 180 / Math.PI;
-                double pitch = Math.atan2(O[7], O[8]) * 180 / Math.PI;
-                double roll = Math.atan2(-O[6], Math.sqrt(Math.pow(O[7],2) + Math.pow(O[8], 2))) * 180 / Math.PI;
-
-
-
-                String l1 = String.format("%2.2f %2.2f %2.2f", O[0], O[1], O[2]);
-                String l2 = String.format("%2.2f %2.2f %2.2f", O[3], O[4], O[5]);
-                String l3 = String.format("%2.2f %2.2f %2.2f", O[6], O[7], O[8]);
 
 
 
@@ -168,8 +133,7 @@ public class CalibrateActivity extends Activity {
                 //float z = R[6]*event.values[0] + R[7]*event.values[1] + R[8]*event.values[2];
 
 
-                changeR(l1, l2, l3);
-                changeText(yawn, pitch, roll);
+
 
 
                 //System.arraycopy(event.values, 0, last_values, 0, 3);
@@ -183,7 +147,59 @@ public class CalibrateActivity extends Activity {
         };
 
 
-        sm.registerListener(accListener, acc, 1000000);
+        sm.registerListener(accListener, acc, 30);
+    }
+
+    protected void calculateRotation(float[] values) {
+        float[] R = new float[9];
+        SensorManager.getRotationMatrixFromVector(R, values);
+
+        if (!in) {
+            in = true;
+
+            float det = R[0] * R[4] * R[8] + R[2] * R[3] * R[7] + R[1] * R[5] * R[6] -
+                    R[2] * R[4] * R[6] - R[1] * R[3] * R[8] - R[0] * R[5] * R[7];
+
+            I[0] = (R[4] * R[8] - R[5] * R[7]) / det;
+            I[1] = (R[2] * R[7] - R[1] * R[8]) / det;
+            I[2] = (R[1] * R[5] - R[2] * R[4]) / det;
+            I[3] = (R[5] * R[6] - R[3] * R[8]) / det;
+            I[4] = (R[0] * R[8] - R[2] * R[6]) / det;
+            I[5] = (R[2] * R[3] - R[0] * R[5]) / det;
+            I[6] = (R[3] * R[7] - R[4] * R[6]) / det;
+            I[7] = (R[1] * R[6] - R[0] * R[7]) / det;
+            I[8] = (R[0] * R[4] - R[1] * R[3]) / det;
+
+        }
+
+        O[0] = I[0] * R[0] + I[1] * R[3] + I[2] * R[6];
+        O[1] = I[0] * R[1] + I[1] * R[4] + I[2] * R[7];
+        O[2] = I[0] * R[2] + I[1] * R[5] + I[2] * R[8];
+
+        O[3] = I[3] * R[0] + I[4] * R[3] + I[5] * R[6];
+        O[4] = I[3] * R[1] + I[4] * R[4] + I[5] * R[7];
+        O[5] = I[3] * R[2] + I[4] * R[5] + I[5] * R[8];
+
+        O[6] = I[6] * R[0] + I[7] * R[3] + I[8] * R[6];
+        O[7] = I[6] * R[1] + I[7] * R[4] + I[8] * R[7];
+        O[8] = I[6] * R[2] + I[7] * R[5] + I[8] * R[8];
+
+
+        double yawn = Math.atan2(O[3], O[0]) * 180 / Math.PI;
+        double pitch = Math.atan2(O[7], O[8]) * 180 / Math.PI;
+        double roll = Math.atan2(-O[6], Math.sqrt(Math.pow(O[7], 2) + Math.pow(O[8], 2))) * 180 / Math.PI;
+
+
+        String l1 = String.format("%2.2f %2.2f %2.2f", O[0], O[1], O[2]);
+        String l2 = String.format("%2.2f %2.2f %2.2f", O[3], O[4], O[5]);
+        String l3 = String.format("%2.2f %2.2f %2.2f", O[6], O[7], O[8]);
+
+        changeR(l1, l2, l3);
+        changeText(yawn, pitch, roll);
+    }
+
+    public void calibrate(View view) {
+        in = false;
     }
 
     @Override
@@ -192,6 +208,12 @@ public class CalibrateActivity extends Activity {
         sm.unregisterListener(accListener);
         //webSocketTimer.cancel();
         //webSocket.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sm.registerListener(accListener, acc, 30);
     }
 
     protected void changeText(double x, double y, double z) {
