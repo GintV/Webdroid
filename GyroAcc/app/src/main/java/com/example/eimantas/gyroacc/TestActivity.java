@@ -139,7 +139,13 @@ public class TestActivity extends Activity {
                 rotValues[i] = 0;
             }
         }
-        System.arraycopy(rotData, 0, currRot, 0, 3);
+
+        if (rotCnt > 0) {
+            for (int i = 0; i < 3; i++) {
+                rotData[i] /= rotCnt;
+                currRot[i] = (float) (Math.asin(rotData[i]) * 180 / Math.PI);
+            }
+        }
     }
 
     protected String formatData() {
@@ -182,8 +188,8 @@ public class TestActivity extends Activity {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    calculateAccData();
                     calculateRotData();
+                    calculateAccData();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

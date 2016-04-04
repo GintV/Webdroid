@@ -26,7 +26,6 @@ public class CalibrateActivity extends Activity {
     private SensorEventListener accListener;
     protected boolean in;
     protected float[] I;
-    protected float[] O;
     private Timer webSocketTimer;
     private WebSocketControl webSocket;
 
@@ -41,7 +40,6 @@ public class CalibrateActivity extends Activity {
         setContentView(R.layout.activity_calibrate);
 
         I = new float[9];
-        O = new float[9];
         in = false;
 
         webSocketTimer = new Timer();
@@ -147,11 +145,12 @@ public class CalibrateActivity extends Activity {
         };
 
 
-        sm.registerListener(accListener, acc, 30);
+        sm.registerListener(accListener, acc, 30000);
     }
 
     protected void calculateRotation(float[] values) {
         float[] R = new float[9];
+        float[] O = new float[9];
         SensorManager.getRotationMatrixFromVector(R, values);
 
         if (!in) {
