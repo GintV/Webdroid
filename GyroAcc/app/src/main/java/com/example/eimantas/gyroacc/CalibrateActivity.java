@@ -25,7 +25,8 @@ public class CalibrateActivity extends Activity {
     private SensorManager sm;
     private SensorEventListener accListener;
     protected boolean in;
-    protected float[] I;
+    protected float[] rotationMatrix;
+    protected PositionFromRotation positionFromRotation;
     private Timer webSocketTimer;
     private WebSocketControl webSocket;
 
@@ -39,7 +40,8 @@ public class CalibrateActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibrate);
 
-        I = new float[9];
+        rotationMatrix = new float[9];
+        positionFromRotation = new PositionFromRotation();
         in = false;
 
         webSocketTimer = new Timer();
@@ -149,7 +151,7 @@ public class CalibrateActivity extends Activity {
     }
 
     protected void calculateRotation(float[] values) {
-        float[] R = new float[9];
+        /*float[] R = new float[9];
         float[] O = new float[9];
         SensorManager.getRotationMatrixFromVector(R, values);
 
@@ -195,6 +197,19 @@ public class CalibrateActivity extends Activity {
 
         changeR(l1, l2, l3);
         changeText(yawn, pitch, roll);
+        */
+        SensorManager.getRotationMatrixFromVector(rotationMatrix, values);
+
+        if(!in) {
+            positionFromRotation.calibrate(rotationMatrix);
+            in = true;
+        }
+
+        positionFromRotation.processRotation(rotationMatrix);
+
+        changeText(positionFromRotation.getXCoordinateMonitor(), positionFromRotation.getYCoordinateMonitor(), 0.0);
+
+
     }
 
     public void calibrate(View view) {
@@ -212,7 +227,7 @@ public class CalibrateActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        sm.registerListener(accListener, acc, 30);
+        sm.registerListener(accListener, acc, 30000);
     }
 
     protected void changeText(double x, double y, double z) {
