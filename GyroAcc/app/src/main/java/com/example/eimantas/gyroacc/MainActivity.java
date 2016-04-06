@@ -42,4 +42,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
     }
+
+    public void openQrCode(View view) {
+        Intent intent = new Intent(this, AndroidQrCodeExample.class);
+        startActivity(intent);
+    }
 }

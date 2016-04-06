@@ -14,8 +14,12 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+        pickFirst  'META-INF/LICENSE'
+        pickFirst 'META-INF/NOTICE'
     }
 }
 
@@ -28,7 +32,11 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
 
     // JSON dependencies
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
     //compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
     //compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+
+    // QR Code dependencies
+    compile 'com.google.android.gms:play-services-vision:8.4.0'
+
 }
