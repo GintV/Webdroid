@@ -17,11 +17,6 @@ android {
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-<<<<<<< HEAD
-    packagingOptions {
-        pickFirst  'META-INF/LICENSE'
-        pickFirst 'META-INF/NOTICE'
-=======
 
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
@@ -34,7 +29,6 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/notice.txt'
->>>>>>> a5da31154a403c9270a0527b74be4fd4d5c52a11
     }
 }
 
