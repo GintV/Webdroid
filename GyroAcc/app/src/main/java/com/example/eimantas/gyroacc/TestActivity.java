@@ -27,6 +27,8 @@ public class TestActivity extends Activity {
     private TextView textViewRotX;
     private TextView textViewRotY;
     private TextView textViewRotZ;
+    private TextView textViewScrX;
+    private TextView textViewScrY;
 
     private SensorManager sm;
     private SensorEventListener accListener, rotListener;
@@ -40,6 +42,9 @@ public class TestActivity extends Activity {
     protected float[] currSpeed;
     protected float[] currPos;
     protected float[] currRot;
+    protected float[] directionVector;
+    protected float[] coordinates;
+    boolean rotInit;
     protected Timer timer;
     protected WebSocketControl webSocket;
 
@@ -53,8 +58,10 @@ public class TestActivity extends Activity {
         textViewRotX = (TextView) findViewById(R.id.textViewRotX);
         textViewRotY = (TextView) findViewById(R.id.textViewRotY);
         textViewRotZ = (TextView) findViewById(R.id.textViewRotZ);
+        textViewScrX = (TextView) findViewById(R.id.textViewScreenX);
+        textViewScrY = (TextView) findViewById(R.id.textViewScreenY);
         accValues = new float[3];
-        rotValues = new float[3];
+        rotValues = new float[4];
         reset(null);
         timer = new Timer();
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -80,7 +87,7 @@ public class TestActivity extends Activity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 synchronized (rotLock) {
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 4; i++) {
                         rotValues[i] += event.values[i];
                     }
                     rotCount++;
@@ -129,23 +136,39 @@ public class TestActivity extends Activity {
     }
 
     protected void calculateRotData() {
-        float[] rotData = new float[3];
+        float[] rotData = new float[4];
         int rotCnt;
         synchronized (rotLock) {
-            System.arraycopy(rotValues, 0, rotData, 0, 3);
+            System.arraycopy(rotValues, 0, rotData, 0, 4);
             rotCnt = rotCount;
             rotCount = 0;
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 rotValues[i] = 0;
             }
         }
 
         if (rotCnt > 0) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 rotData[i] /= rotCnt;
-                currRot[i] = (float) (Math.asin(rotData[i]) * 180 / Math.PI);
             }
         }
+        if (rotInit) {
+            float[] rotationQuat = multiplyQuat(rotData, invertQuat(currRot));
+            directionVector = multiplyQuat(rotationQuat, directionVector);
+            directionVector = multiplyQuat(directionVector, invertQuat(rotationQuat));
+            directionVector[3] = 0f;
+            float t = 10000;
+            if (directionVector[1] != 0) {
+                t = 1 / directionVector[1];
+                coordinates[0] = directionVector[0] * t;
+                coordinates[1] = directionVector[2] * t;
+            }
+        }
+        else {
+            directionVector[1] = 1f;
+            rotInit = true;
+        }
+        System.arraycopy(rotData, 0, currRot, 0, 4);
     }
 
     protected String formatData() {
@@ -166,15 +189,20 @@ public class TestActivity extends Activity {
         textViewPosX.setText(String.format(Locale.US, "%2.2f", currPos[0]));
         textViewPosY.setText(String.format(Locale.US, "%2.2f", currPos[1]));
         textViewPosZ.setText(String.format(Locale.US, "%2.2f", currPos[2]));
-        textViewRotX.setText(String.format(Locale.US, "%2.2f", currRot[0]));
-        textViewRotY.setText(String.format(Locale.US, "%2.2f", currRot[1]));
-        textViewRotZ.setText(String.format(Locale.US, "%2.2f", currRot[2]));
+        textViewRotX.setText(String.format(Locale.US, "%2.2f", directionVector[0]));
+        textViewRotY.setText(String.format(Locale.US, "%2.2f", directionVector[1]));
+        textViewRotZ.setText(String.format(Locale.US, "%2.2f", directionVector[2]));
+        textViewScrX.setText(String.format(Locale.US, "%2.4f", coordinates[0]));
+        textViewScrY.setText(String.format(Locale.US, "%2.4f", coordinates[1]));
     }
 
     public void reset(View view) {
         currSpeed = new float[3];
         currPos = new float[3];
-        currRot = new float[3];
+        currRot = new float[4];
+        coordinates = new float[2];
+        directionVector = new float[4];
+        rotInit = false;
         showData();
     }
 
@@ -220,5 +248,27 @@ public class TestActivity extends Activity {
     public void onStop() {
         super.onStop();
         webSocket.close();
+    }
+
+    protected float[] multiplyQuat (float[] q1, float[] q2) {
+        float[] answer = new float[4];
+
+        answer[0] = q1[3] * q2[0] + q1[0] * q2[3] - q1[1] * q2[2] + q1[2] * q2[1];
+        answer[1] = q1[3] * q2[1] + q1[0] * q2[2] + q1[1] * q2[3] - q1[2] * q2[0];
+        answer[2] = q1[3] * q2[2] - q1[0] * q2[1] + q1[1] * q2[0] + q1[2] * q2[3];
+        answer[3] = q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2];
+
+        return answer;
+    }
+
+    protected float[] invertQuat(float[] q) {
+        float[] answer = new float[4];
+
+        answer[3] = q[3];
+        for (int i = 0; i < 3; i++) {
+            answer[i] = -q[i];
+        }
+
+        return answer;
     }
 }
