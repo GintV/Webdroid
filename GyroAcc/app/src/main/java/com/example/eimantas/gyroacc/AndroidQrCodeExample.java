@@ -1,11 +1,7 @@
 package com.example.eimantas.gyroacc;
 
-import android.Manifest;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
@@ -20,7 +16,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
-public class AndroidQrCodeExample extends AppCompatActivity {
+public class AndroidQrCodeExample extends Activity {
 
     private TextView barcodeInfo;
     private SurfaceView cameraView;

@@ -38,7 +38,6 @@ public class TestActivity extends Activity {
     protected float[] accValues;
     protected float[] rotValues;
     protected int accCount;
-    protected int rotCount;
     protected float[] currSpeed;
     protected float[] currPos;
     protected float[] currRot;
@@ -88,9 +87,8 @@ public class TestActivity extends Activity {
             public void onSensorChanged(SensorEvent event) {
                 synchronized (rotLock) {
                     for (int i = 0; i < 4; i++) {
-                        rotValues[i] += event.values[i];
+                        rotValues[i] = event.values[i];
                     }
-                    rotCount++;
                 }
             }
 
@@ -137,35 +135,29 @@ public class TestActivity extends Activity {
 
     protected void calculateRotData() {
         float[] rotData = new float[4];
-        int rotCnt;
         synchronized (rotLock) {
             System.arraycopy(rotValues, 0, rotData, 0, 4);
-            rotCnt = rotCount;
-            rotCount = 0;
-            for (int i = 0; i < 4; i++) {
-                rotValues[i] = 0;
-            }
         }
 
-        if (rotCnt > 0) {
-            for (int i = 0; i < 4; i++) {
-                rotData[i] /= rotCnt;
-            }
-        }
         if (rotInit) {
             float[] rotationQuat = multiplyQuat(rotData, invertQuat(currRot));
             directionVector = multiplyQuat(rotationQuat, directionVector);
             directionVector = multiplyQuat(directionVector, invertQuat(rotationQuat));
             directionVector[3] = 0f;
             float t = 10000;
-            if (directionVector[1] != 0) {
-                t = 1 / directionVector[1];
-                coordinates[0] = directionVector[0] * t;
-                coordinates[1] = directionVector[2] * t;
+            if (directionVector[2] != 0) {
+                t = 1 / directionVector[2];
+                for (int i = 0; i < 2; i++) {
+                    coordinates[i] = t * directionVector[i];
+                    if (coordinates[i] > 1f)
+                        coordinates[i] = 1f;
+                    else if (coordinates[i] < -1f)
+                        coordinates[i] = -1f;
+                }
             }
         }
         else {
-            directionVector[1] = 1f;
+            directionVector[2] = 1f;
             rotInit = true;
         }
         System.arraycopy(rotData, 0, currRot, 0, 4);
@@ -192,8 +184,8 @@ public class TestActivity extends Activity {
         textViewRotX.setText(String.format(Locale.US, "%2.2f", directionVector[0]));
         textViewRotY.setText(String.format(Locale.US, "%2.2f", directionVector[1]));
         textViewRotZ.setText(String.format(Locale.US, "%2.2f", directionVector[2]));
-        textViewScrX.setText(String.format(Locale.US, "%2.4f", coordinates[0]));
-        textViewScrY.setText(String.format(Locale.US, "%2.4f", coordinates[1]));
+        textViewScrX.setText(String.format(Locale.US, "%2.2f", coordinates[0]));
+        textViewScrY.setText(String.format(Locale.US, "%2.2f", coordinates[1]));
     }
 
     public void reset(View view) {
@@ -224,7 +216,7 @@ public class TestActivity extends Activity {
                             showData();
                         }
                     });
-                    sendData(formatData());
+                    //sendData(formatData());
                 }
 
             }, 0, SEND_RATE);
