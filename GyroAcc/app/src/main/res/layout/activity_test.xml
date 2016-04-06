@@ -165,4 +165,56 @@
         android:layout_below="@+id/textViewRotY"
         android:layout_alignLeft="@+id/textViewRotY"
         android:layout_alignStart="@+id/textViewRotY" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Coordinates"
+        android:id="@+id/textView38"
+        android:layout_marginTop="39dp"
+        android:layout_below="@+id/textView34"
+        android:layout_alignLeft="@+id/textView34"
+        android:layout_alignStart="@+id/textView34" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="x:"
+        android:id="@+id/textView39"
+        android:layout_below="@+id/textView38"
+        android:layout_alignLeft="@+id/textView38"
+        android:layout_alignStart="@+id/textView38"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="y:"
+        android:id="@+id/textView40"
+        android:layout_below="@+id/textView39"
+        android:layout_alignLeft="@+id/textView39"
+        android:layout_alignStart="@+id/textView39" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewScreenX"
+        android:layout_above="@+id/textView40"
+        android:layout_alignLeft="@+id/textViewRotZ"
+        android:layout_alignStart="@+id/textViewRotZ" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="0.00"
+        android:id="@+id/textViewScreenY"
+        android:layout_alignTop="@+id/textView40"
+        android:layout_alignLeft="@+id/textViewScreenX"
+        android:layout_alignStart="@+id/textViewScreenX" />
 </RelativeLayout>
