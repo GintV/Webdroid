@@ -155,7 +155,7 @@ public class PositionFromRotation implements Data {
     }
 
     @Override
-    public void sendThroughWebSocket() {
+    public String toJSON() {
         ObjectMapper objectMapper = new ObjectMapper();
 
         String jsonString = null;
@@ -165,7 +165,6 @@ public class PositionFromRotation implements Data {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-
+        return jsonString;
     }
 }

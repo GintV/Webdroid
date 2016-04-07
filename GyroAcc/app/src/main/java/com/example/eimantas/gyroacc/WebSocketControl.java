@@ -2,7 +2,6 @@ package com.example.eimantas.gyroacc;
 
 import android.os.Build;
 import android.util.Log;
-import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -14,31 +13,19 @@ import java.net.URI;
  */
 public class WebSocketControl extends WebSocketClient {
 
-    TextView messageCounter;
-
     public WebSocketControl(URI serverURI) {
         super(serverURI);
-    }
-
-    public WebSocketControl(URI serverURI, TextView textView) {
-        super(serverURI);
-        messageCounter = textView;
-        messageCounter.setText("0");
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         Log.i("Websocket", "Opened");
-        this.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+        this.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL + " " + Build.SERIAL);
     }
 
     @Override
     public void onMessage(String message) {
-        if (messageCounter != null) {
-            int cnt = Integer.parseInt(messageCounter.getText().toString());
-            cnt++;
-            messageCounter.setText(Integer.toString(cnt));
-        }
+
     }
 
     @Override

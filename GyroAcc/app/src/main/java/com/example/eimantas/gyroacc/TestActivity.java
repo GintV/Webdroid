@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -42,7 +45,7 @@ public class TestActivity extends Activity {
     protected float[] currPos;
     protected float[] currRot;
     protected float[] directionVector;
-    protected float[] coordinates;
+    protected Coordinates coordinates;
     boolean rotInit;
     protected Timer timer;
     protected WebSocketControl webSocket;
@@ -86,9 +89,7 @@ public class TestActivity extends Activity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 synchronized (rotLock) {
-                    for (int i = 0; i < 4; i++) {
-                        rotValues[i] = event.values[i];
-                    }
+                    System.arraycopy(event.values, 0, rotValues, 0, 4);
                 }
             }
 
@@ -144,16 +145,18 @@ public class TestActivity extends Activity {
             directionVector = multiplyQuat(rotationQuat, directionVector);
             directionVector = multiplyQuat(directionVector, invertQuat(rotationQuat));
             directionVector[3] = 0f;
-            float t = 10000;
             if (directionVector[2] != 0) {
-                t = 1 / directionVector[2];
+                float t = 1 / directionVector[2];
+                float[] tempCoordinates = new float[2];
                 for (int i = 0; i < 2; i++) {
-                    coordinates[i] = t * directionVector[i];
-                    if (coordinates[i] > 1f)
-                        coordinates[i] = 1f;
-                    else if (coordinates[i] < -1f)
-                        coordinates[i] = -1f;
+                    tempCoordinates[i] = t * directionVector[i];
+                    if (tempCoordinates[i] > 1f)
+                        tempCoordinates[i] = 1f;
+                    else if (tempCoordinates[i] < -1f)
+                        tempCoordinates[i] = -1f;
                 }
+                coordinates.setX(tempCoordinates[0]);
+                coordinates.setY(tempCoordinates[1]);
             }
         }
         else {
@@ -161,10 +164,6 @@ public class TestActivity extends Activity {
             rotInit = true;
         }
         System.arraycopy(rotData, 0, currRot, 0, 4);
-    }
-
-    protected String formatData() {
-        return "";
     }
 
     protected void sendData(String data) {
@@ -184,15 +183,15 @@ public class TestActivity extends Activity {
         textViewRotX.setText(String.format(Locale.US, "%2.2f", directionVector[0]));
         textViewRotY.setText(String.format(Locale.US, "%2.2f", directionVector[1]));
         textViewRotZ.setText(String.format(Locale.US, "%2.2f", directionVector[2]));
-        textViewScrX.setText(String.format(Locale.US, "%2.2f", coordinates[0]));
-        textViewScrY.setText(String.format(Locale.US, "%2.2f", coordinates[1]));
+        textViewScrX.setText(String.format(Locale.US, "%2.2f", coordinates.getX()));
+        textViewScrY.setText(String.format(Locale.US, "%2.2f", coordinates.getY()));
     }
 
     public void reset(View view) {
         currSpeed = new float[3];
         currPos = new float[3];
         currRot = new float[4];
-        coordinates = new float[2];
+        coordinates = new Coordinates();
         directionVector = new float[4];
         rotInit = false;
         showData();
@@ -216,7 +215,9 @@ public class TestActivity extends Activity {
                             showData();
                         }
                     });
-                    //sendData(formatData());
+                    String dataToSend = coordinates.toJSON();
+                    if (dataToSend != null)
+                        sendData(dataToSend);
                 }
 
             }, 0, SEND_RATE);
@@ -262,5 +263,49 @@ public class TestActivity extends Activity {
         }
 
         return answer;
+    }
+
+    protected class Coordinates implements Data {
+
+        private float x;
+        private float y;
+
+        Coordinates() {
+            x = 0f;
+            y = 0f;
+        }
+
+        public void setY(float y) {
+            this.y = y;
+        }
+
+        public void setX(float x) {
+            this.x = x;
+        }
+
+        public double getY() {
+
+            return y;
+        }
+
+        public double getX() {
+
+            return x;
+        }
+
+        @Override
+        public String toJSON() {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            String jsonString = null;
+
+            try {
+                jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            return jsonString;
+        }
     }
 }

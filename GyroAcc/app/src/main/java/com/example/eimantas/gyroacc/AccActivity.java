@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class AccActivity extends Activity {
-
+    /*
     private TextView textViewX;
     private TextView textViewY;
     private TextView textViewZ;
@@ -147,4 +147,5 @@ public class AccActivity extends Activity {
 
 
     }
+    */
 }

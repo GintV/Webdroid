@@ -23,12 +23,6 @@
            </intent-filter>
        </activity>
        <activity
-           android:name=".AccActivity"
-           android:screenOrientation="portrait" />
-       <activity
-           android:name=".GyroActivity"
-           android:screenOrientation="portrait" />
-       <activity
            android:name=".CalibrateActivity"
            android:screenOrientation="portrait" />
        <activity

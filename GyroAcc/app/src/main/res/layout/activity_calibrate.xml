@@ -69,31 +69,7 @@
         android:text="0.00"
         android:id="@+id/textViewCalibZ"
         android:gravity="right"
-        android:layout_below="@+id/textViewCalibY"
-        android:layout_alignRight="@+id/textView22"
-        android:layout_alignEnd="@+id/textView22" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Message Counter"
-        android:id="@+id/textView22"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="166dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="99999"
-        android:id="@+id/textViewCnt"
-        android:layout_above="@+id/textView22"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="21dp" />
+        android:layout_below="@+id/textViewCalibY" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -101,8 +77,8 @@
         android:text="New Text"
         android:id="@+id/textView35"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/textViewCalibX"
-        android:layout_alignStart="@+id/textViewCalibX" />
+        android:layout_toRightOf="@+id/textViewCalibX"
+        android:layout_toEndOf="@+id/textViewCalibX" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -119,8 +95,8 @@
         android:text="New Text"
         android:id="@+id/textView37"
         android:layout_below="@+id/textView36"
-        android:layout_alignLeft="@+id/textView35"
-        android:layout_alignStart="@+id/textView35" />
+        android:layout_alignLeft="@+id/textView36"
+        android:layout_alignStart="@+id/textView36" />
 
     <TextView
         android:layout_width="wrap_content"

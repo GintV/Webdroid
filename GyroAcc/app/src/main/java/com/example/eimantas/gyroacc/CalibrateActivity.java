@@ -5,8 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.opengl.Matrix;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -46,14 +44,17 @@ public class CalibrateActivity extends Activity {
 
         webSocketTimer = new Timer();
 
-        /*try {
-            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"), (TextView) findViewById(R.id.textViewCnt));
+        try {
+            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
             webSocket.connect();
             webSocketTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     try {
-                        webSocket.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                        String data = positionFromRotation.toJSON();
+                        if (data != null) {
+                            webSocket.send(data);
+                        }
                     }
                     catch (Exception ex) {
 
@@ -62,7 +63,7 @@ public class CalibrateActivity extends Activity {
             }, 0, 34);
         } catch (URISyntaxException e) {
             e.printStackTrace();
-        }*/
+        }
 
         L1 = (TextView) findViewById(R.id.textView35);
         L2 = (TextView) findViewById(R.id.textView36);
@@ -208,6 +209,7 @@ public class CalibrateActivity extends Activity {
         positionFromRotation.processRotation(rotationMatrix);
 
         changeText(positionFromRotation.getXCoordinateMonitor(), positionFromRotation.getYCoordinateMonitor(), 0.0);
+        positionFromRotation.toJSON();
 
 
     }
@@ -220,8 +222,8 @@ public class CalibrateActivity extends Activity {
     protected void onStop() {
         super.onStop();
         sm.unregisterListener(accListener);
-        //webSocketTimer.cancel();
-        //webSocket.close();
+        webSocketTimer.cancel();
+        webSocket.close();
     }
 
     @Override
