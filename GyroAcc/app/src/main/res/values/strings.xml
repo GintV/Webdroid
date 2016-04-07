@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GyroAcc</string>
+    <string name="app_name">WebDroid</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="title_activity_android_qr_code_example">AndroidQrCodeExample</string>
 </resources>
