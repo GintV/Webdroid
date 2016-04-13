@@ -20,7 +20,7 @@ import java.util.TimerTask;
 
 public class TestActivity extends Activity {
 
-    private static long SEND_RATE = 34;
+    private static long SEND_RATE = 5;
     private static float DRIFT_COMPENSATION = 0.001f;
     private static float MIN_SIGNIFICANT_VALUE = 0.005f;
 
@@ -155,7 +155,7 @@ public class TestActivity extends Activity {
                     else if (tempCoordinates[i] < -1f)
                         tempCoordinates[i] = -1f;
                 }
-                coordinates.setX(tempCoordinates[0]);
+                coordinates.setX(-tempCoordinates[0]);
                 coordinates.setY(tempCoordinates[1]);
             }
         }
