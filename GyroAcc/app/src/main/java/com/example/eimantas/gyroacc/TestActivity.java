@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,6 +33,7 @@ public class TestActivity extends Activity {
     private TextView textViewRotZ;
     private TextView textViewScrX;
     private TextView textViewScrY;
+    private CheckBox checkBox;
 
     private SensorManager sm;
     private SensorEventListener accListener, rotListener;
@@ -62,6 +64,7 @@ public class TestActivity extends Activity {
         textViewRotZ = (TextView) findViewById(R.id.textViewRotZ);
         textViewScrX = (TextView) findViewById(R.id.textViewScreenX);
         textViewScrY = (TextView) findViewById(R.id.textViewScreenY);
+        checkBox = (CheckBox) findViewById(R.id.checkBox);
         accValues = new float[3];
         rotValues = new float[4];
         reset(null);
@@ -157,22 +160,44 @@ public class TestActivity extends Activity {
             directionVector[3] = 0f;
             */
             directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
-            if (directionVector[2] != 0) {
-                float t = 1 / directionVector[2];
-                float[] tempCoordinates = new float[2];
-                for (int i = 0; i < 2; i++) {
-                    tempCoordinates[i] = t * directionVector[i];
-                    if (tempCoordinates[i] > 1f)
-                        tempCoordinates[i] = 1f;
-                    else if (tempCoordinates[i] < -1f)
-                        tempCoordinates[i] = -1f;
+            if (!checkBox.isChecked()) {
+                if (directionVector[2] != 0) {
+                    float t = 1 / directionVector[2];
+                    float[] tempCoordinates = new float[2];
+                    for (int i = 0; i < 2; i++) {
+                        tempCoordinates[i] = t * directionVector[i];
+                        if (tempCoordinates[i] > 1.0f)
+                            tempCoordinates[i] = 1.0f;
+                        else if (tempCoordinates[i] < -1.0f)
+                            tempCoordinates[i] = -1.0f;
+                    }
+                    coordinates.setX(-tempCoordinates[0]);
+                    coordinates.setY(-tempCoordinates[1]);
                 }
-                coordinates.setX(-tempCoordinates[0]);
-                coordinates.setY(-tempCoordinates[1]);
+            }
+            else {
+                if (directionVector[1] != 0) {
+                    float t = 1 / directionVector[1];
+                    float[] tempCoordinates = new float[3];
+                    for (int i = 0; i < 3; i+=2) {
+                        tempCoordinates[i] = t * directionVector[i];
+                        if (tempCoordinates[i] > 1.0f)
+                            tempCoordinates[i] = 1.0f;
+                        else if (tempCoordinates[i] < -1.0f)
+                            tempCoordinates[i] = -1.0f;
+                    }
+                    coordinates.setX(tempCoordinates[0]);
+                    coordinates.setY(tempCoordinates[2]);
+                }
             }
         }
         else {
-            directionVector[2] = 1f;
+            if (checkBox.isChecked()) {
+                directionVector[1] = 1.0f;
+            }
+            else {
+                directionVector[2] = 1.0f;
+            }
             rotInit = true;
         }
         System.arraycopy(rotData, 0, currRot, 0, 4);
@@ -282,7 +307,7 @@ public class TestActivity extends Activity {
 
         answer[0] = firstDot * q[0] + secondDot * v[0] + crossCoef * (q[1] * v[2] - q[2] * v[1]);
         answer[1] = firstDot * q[1] + secondDot * v[1] + crossCoef * (q[0] * v[2] - q[2] * v[0]);
-        answer[2] = firstDot * q[2] + secondDot * v[2] + crossCoef * (q[0] * v[1] - q[1] * v[0]);
+        answer[2] = firstDot * q[2] + secondDot * v[2] + crossCoef * (q[1] * v[0] - q[0] * v[1]);
         answer[3] = 0.0f;
 
         return answer;
