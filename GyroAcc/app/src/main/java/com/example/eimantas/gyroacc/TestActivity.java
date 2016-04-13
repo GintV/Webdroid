@@ -69,6 +69,7 @@ public class TestActivity extends Activity {
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
         acc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         rot = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
         accListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -88,9 +89,15 @@ public class TestActivity extends Activity {
         rotListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
+
+
                 synchronized (rotLock) {
                     System.arraycopy(event.values, 0, rotValues, 0, 4);
                 }
+                /*
+                System.arraycopy(event.values, 0, rotValues, 0, 4);
+                calculateRotData();
+                */
             }
 
             @Override
@@ -103,6 +110,7 @@ public class TestActivity extends Activity {
     protected void calculateAccData() {
         float[] accData = new float[3];
         int accCnt;
+
         synchronized (accLock) {
             System.arraycopy(accValues, 0, accData, 0, 3);
             accCnt = accCount;
@@ -136,15 +144,19 @@ public class TestActivity extends Activity {
 
     protected void calculateRotData() {
         float[] rotData = new float[4];
+
         synchronized (rotLock) {
             System.arraycopy(rotValues, 0, rotData, 0, 4);
         }
 
         if (rotInit) {
-            float[] rotationQuat = multiplyQuat(rotData, invertQuat(currRot));
-            directionVector = multiplyQuat(rotationQuat, directionVector);
-            directionVector = multiplyQuat(directionVector, invertQuat(rotationQuat));
+            float[] rotationQuat = multiplyQuatWithQuat(rotData, invertQuat(currRot));
+            /*
+            directionVector = multiplyQuatWithQuat(rotationQuat, directionVector);
+            directionVector = multiplyQuatWithQuat(directionVector, invertQuat(rotationQuat));
             directionVector[3] = 0f;
+            */
+            directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
             if (directionVector[2] != 0) {
                 float t = 1 / directionVector[2];
                 float[] tempCoordinates = new float[2];
@@ -156,7 +168,7 @@ public class TestActivity extends Activity {
                         tempCoordinates[i] = -1f;
                 }
                 coordinates.setX(-tempCoordinates[0]);
-                coordinates.setY(tempCoordinates[1]);
+                coordinates.setY(-tempCoordinates[1]);
             }
         }
         else {
@@ -208,7 +220,7 @@ public class TestActivity extends Activity {
                 @Override
                 public void run() {
                     calculateRotData();
-                    calculateAccData();
+                    //calculateAccData();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -225,7 +237,7 @@ public class TestActivity extends Activity {
             e.printStackTrace();
         }
 
-        sm.registerListener(accListener, acc, SensorManager.SENSOR_DELAY_FASTEST);
+        //sm.registerListener(accListener, acc, SensorManager.SENSOR_DELAY_FASTEST);
         sm.registerListener(rotListener, rot, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
@@ -233,7 +245,7 @@ public class TestActivity extends Activity {
     public void onPause() {
         super.onPause();
         sm.unregisterListener(rotListener);
-        sm.unregisterListener(accListener);
+        //sm.unregisterListener(accListener);
         timer.cancel();
     }
 
@@ -243,13 +255,35 @@ public class TestActivity extends Activity {
         webSocket.close();
     }
 
-    protected float[] multiplyQuat (float[] q1, float[] q2) {
+    protected float[] multiplyQuatWithQuat(float[] q1, float[] q2) {
         float[] answer = new float[4];
 
         answer[0] = q1[3] * q2[0] + q1[0] * q2[3] - q1[1] * q2[2] + q1[2] * q2[1];
         answer[1] = q1[3] * q2[1] + q1[0] * q2[2] + q1[1] * q2[3] - q1[2] * q2[0];
         answer[2] = q1[3] * q2[2] - q1[0] * q2[1] + q1[1] * q2[0] + q1[2] * q2[3];
         answer[3] = q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2];
+
+        return answer;
+    }
+
+    protected float[] multiplyQuatWithVector(float[] q, float[] v) {
+        float[] answer = new float[4];
+        float firstDot = 0f;
+        float secondDot = 0f;
+        float crossCoef = 2.0f * q[3];
+
+        for (int i = 0; i < 3; i++) {
+            firstDot += q[i] * v[i];
+            secondDot += q[i] * q[i];
+        }
+
+        firstDot *= 2;
+        secondDot = q[3] * q[3] - secondDot;
+
+        answer[0] = firstDot * q[0] + secondDot * v[0] + crossCoef * (q[1] * v[2] - q[2] * v[1]);
+        answer[1] = firstDot * q[1] + secondDot * v[1] + crossCoef * (q[0] * v[2] - q[2] * v[0]);
+        answer[2] = firstDot * q[2] + secondDot * v[2] + crossCoef * (q[0] * v[1] - q[1] * v[0]);
+        answer[3] = 0.0f;
 
         return answer;
     }

@@ -18,8 +18,8 @@ public class PositionFromRotation implements Data {
     private float[] relativeRotationMatrix;
 
     private class Pointer {
-        public double xCoordinateMonitor;
-        public double yCoordinateMonitor;
+        public double x;
+        public double y;
         public double sensitivity;
         public boolean pointerType;
     }
@@ -44,17 +44,17 @@ public class PositionFromRotation implements Data {
     }
 
     public double getXCoordinateMonitor() {
-        return this.pointer.xCoordinateMonitor;
+        return this.pointer.x;
     }
     public double getYCoordinateMonitor() {
-        return this.pointer.yCoordinateMonitor;
+        return this.pointer.y;
     }
 
     private void setXCoordinateMonitor(double xCoordinateMonitor) {
-        this.pointer.xCoordinateMonitor = xCoordinateMonitor;
+        this.pointer.x = xCoordinateMonitor;
     }
     private void setYCoordinateMonitor(double yCoordinateMonitor) {
-        this.pointer.yCoordinateMonitor = yCoordinateMonitor;
+        this.pointer.y = yCoordinateMonitor;
     }
     public void setSensitivity(int sensitivity) {
         if(sensitivity < MIN_SENSITIVITY)
@@ -95,8 +95,8 @@ public class PositionFromRotation implements Data {
         invertedCalibratedRotationMatrix[8] = (rotationMatrix[0] * rotationMatrix[4] - rotationMatrix[1] * rotationMatrix[3]);
 
 
-        this.pointer.xCoordinateMonitor = 0.0;
-        this.pointer.yCoordinateMonitor = 0.0;
+        this.pointer.x = 0.0;
+        this.pointer.y = 0.0;
     }
 
     public void processRotation (float[] rotationMatrix) {
@@ -139,6 +139,8 @@ public class PositionFromRotation implements Data {
             x = Math.tan(Math.toRadians(roll * this.pointer.sensitivity));
             y = Math.tan(Math.toRadians(pitch * this.pointer.sensitivity));
         }
+
+        y *= -1;
 
         if(x > 1)
             x = 1;

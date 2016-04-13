@@ -42,29 +42,6 @@ public class CalibrateActivity extends Activity {
         positionFromRotation = new PositionFromRotation();
         in = false;
 
-        webSocketTimer = new Timer();
-
-        try {
-            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
-            webSocket.connect();
-            webSocketTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        String data = positionFromRotation.toJSON();
-                        if (data != null) {
-                            webSocket.send(data);
-                        }
-                    }
-                    catch (Exception ex) {
-
-                    }
-                }
-            }, 0, 34);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
         L1 = (TextView) findViewById(R.id.textView35);
         L2 = (TextView) findViewById(R.id.textView36);
         L3 = (TextView) findViewById(R.id.textView37);
@@ -229,7 +206,30 @@ public class CalibrateActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        sm.registerListener(accListener, acc, 30000);
+        sm.registerListener(accListener, acc, SensorManager.SENSOR_DELAY_FASTEST);
+
+        webSocketTimer = new Timer();
+
+        try {
+            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
+            webSocket.connect();
+            webSocketTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        String data = positionFromRotation.toJSON();
+                        if (data != null) {
+                            webSocket.send(data);
+                        }
+                    }
+                    catch (Exception ex) {
+
+                    }
+                }
+            }, 0, 5);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void changeText(double x, double y, double z) {
