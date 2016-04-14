@@ -176,24 +176,24 @@ public class TestActivity extends Activity {
                 }
             }
             else {
-                if (directionVector[1] != 0) {
-                    float t = 1 / directionVector[1];
-                    float[] tempCoordinates = new float[3];
-                    for (int i = 0; i < 3; i+=2) {
-                        tempCoordinates[i] = t * directionVector[i];
-                        if (tempCoordinates[i] > 1.0f)
-                            tempCoordinates[i] = 1.0f;
-                        else if (tempCoordinates[i] < -1.0f)
-                            tempCoordinates[i] = -1.0f;
+                if (directionVector[0] != 0) {
+                    float t = 1 / directionVector[0];
+                    float[] tempCoordinates = new float[2];
+                    for (int i = 1; i < 3; i++) {
+                        tempCoordinates[i - 1] = t * directionVector[i];
+                        if (tempCoordinates[i - 1] > 1.0f)
+                            tempCoordinates[i - 1] = 1.0f;
+                        else if (tempCoordinates[i - 1] < -1.0f)
+                            tempCoordinates[i - 1] = -1.0f;
                     }
                     coordinates.setX(tempCoordinates[0]);
-                    coordinates.setY(tempCoordinates[2]);
+                    coordinates.setY(tempCoordinates[1]);
                 }
             }
         }
         else {
             if (checkBox.isChecked()) {
-                directionVector[1] = 1.0f;
+                directionVector[0] = 1.0f;
             }
             else {
                 directionVector[2] = 1.0f;
@@ -283,16 +283,25 @@ public class TestActivity extends Activity {
     protected float[] multiplyQuatWithQuat(float[] q1, float[] q2) {
         float[] answer = new float[4];
 
+        /*
         answer[0] = q1[3] * q2[0] + q1[0] * q2[3] - q1[1] * q2[2] + q1[2] * q2[1];
         answer[1] = q1[3] * q2[1] + q1[0] * q2[2] + q1[1] * q2[3] - q1[2] * q2[0];
         answer[2] = q1[3] * q2[2] - q1[0] * q2[1] + q1[1] * q2[0] + q1[2] * q2[3];
         answer[3] = q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2];
+        */
+
+        answer[0] = q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1] + q1[3] * q2[0];
+        answer[1] = -q1[0] * q2[2] + q1[1] * q2[3] + q1[2] * q2[0] + q1[3] * q2[1];
+        answer[2] = q1[0] * q2[1] - q1[1] * q2[0] + q1[2] * q2[3] + q1[3] * q2[2];
+        answer[3] = -q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2] + q1[3] * q2[3];
 
         return answer;
     }
 
     protected float[] multiplyQuatWithVector(float[] q, float[] v) {
         float[] answer = new float[4];
+
+        /*
         float firstDot = 0f;
         float secondDot = 0f;
         float crossCoef = 2.0f * q[3];
@@ -306,8 +315,20 @@ public class TestActivity extends Activity {
         secondDot = q[3] * q[3] - secondDot;
 
         answer[0] = firstDot * q[0] + secondDot * v[0] + crossCoef * (q[1] * v[2] - q[2] * v[1]);
-        answer[1] = firstDot * q[1] + secondDot * v[1] + crossCoef * (q[0] * v[2] - q[2] * v[0]);
-        answer[2] = firstDot * q[2] + secondDot * v[2] + crossCoef * (q[1] * v[0] - q[0] * v[1]);
+        answer[1] = firstDot * q[1] + secondDot * v[1] + crossCoef * (q[2] * v[0] - q[0] * v[2]);
+        answer[2] = firstDot * q[2] + secondDot * v[2] + crossCoef * (q[0] * v[1] - q[1] * v[0]);
+       */
+
+        float[] cross = new float[3];
+
+        cross[0] = (q[1] * v[2] - q[2] * v[1]) * 2;
+        cross[1] = (q[2] * v[0] - q[0] * v[2]) * 2;
+        cross[2] = (q[0] * v[1] - q[1] * v[0]) * 2;
+
+        answer[0] = v[0] + q[3] * cross[0] + q[1] * cross[2] - q[2] * cross[1];
+        answer[1] = v[1] + q[3] * cross[1] + q[2] * cross[0] - q[0] * cross[2];
+        answer[2] = v[2] + q[3] * cross[2] + q[0] * cross[1] - q[1] * cross[0];
+
         answer[3] = 0.0f;
 
         return answer;
@@ -320,6 +341,11 @@ public class TestActivity extends Activity {
         for (int i = 0; i < 3; i++) {
             answer[i] = -q[i];
         }
+
+        /*
+        System.arraycopy(q, 0, answer, 0, 4);
+        answer[3] = -q[3];
+        */
 
         return answer;
     }
