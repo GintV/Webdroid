@@ -154,12 +154,12 @@ public class TestActivity extends Activity {
 
         if (rotInit) {
             float[] rotationQuat = multiplyQuatWithQuat(rotData, invertQuat(currRot));
-            /*
+
             directionVector = multiplyQuatWithQuat(rotationQuat, directionVector);
             directionVector = multiplyQuatWithQuat(directionVector, invertQuat(rotationQuat));
             directionVector[3] = 0f;
-            */
-            directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
+
+            //directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
             if (!checkBox.isChecked()) {
                 if (directionVector[2] != 0) {
                     float t = 1 / directionVector[2];
@@ -186,8 +186,8 @@ public class TestActivity extends Activity {
                         else if (tempCoordinates[i - 1] < -1.0f)
                             tempCoordinates[i - 1] = -1.0f;
                     }
-                    coordinates.setX(tempCoordinates[0]);
-                    coordinates.setY(tempCoordinates[1]);
+                    coordinates.setX(-tempCoordinates[0]);
+                    coordinates.setY(-tempCoordinates[1]);
                 }
             }
         }
