@@ -185,7 +185,7 @@ public class CalibrateActivity extends Activity {
 
         positionFromRotation.processRotation(rotationMatrix);
 
-        changeText(positionFromRotation.getXCoordinateMonitor(), positionFromRotation.getYCoordinateMonitor(), 0.0);
+        changeText(positionFromRotation.getXCoordinateMonitor(), -positionFromRotation.getYCoordinateMonitor(), positionFromRotation.getPointerOrientation());
         positionFromRotation.toJSON();
 
 
