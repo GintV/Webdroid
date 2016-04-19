@@ -156,11 +156,11 @@ public class TestActivity extends Activity {
         if (rotInit) {
             float[] rotationQuat = multiplyQuatWithQuat(rotData, invertQuat(currRot));
 
-            directionVector = multiplyQuatWithQuat(rotationQuat, directionVector);
-            directionVector = multiplyQuatWithQuat(directionVector, invertQuat(rotationQuat));
-            directionVector[3] = 0f;
+            //directionVector = multiplyQuatWithQuat(rotationQuat, directionVector);
+            //directionVector = multiplyQuatWithQuat(directionVector, invertQuat(rotationQuat));
+            //directionVector[3] = 0f;
 
-            //directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
+            directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
             /*
             if (directionVector[2] != 0) {
                 float t = 1 / directionVector[2];
