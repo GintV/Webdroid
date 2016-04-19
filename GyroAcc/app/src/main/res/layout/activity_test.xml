@@ -218,16 +218,4 @@
         android:layout_alignLeft="@+id/textViewScreenX"
         android:layout_alignStart="@+id/textViewScreenX" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check me"
-        android:id="@+id/checkBox"
-        android:layout_above="@+id/buttonReset"
-        android:layout_below="@+id/textView40"
-        android:layout_alignLeft="@+id/textView40"
-        android:layout_alignStart="@+id/textView40"
-        android:layout_alignRight="@+id/buttonReset"
-        android:layout_alignEnd="@+id/buttonReset"
-        android:checked="false" />
 </RelativeLayout>

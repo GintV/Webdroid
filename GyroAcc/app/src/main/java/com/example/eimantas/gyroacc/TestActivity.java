@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -33,7 +34,6 @@ public class TestActivity extends Activity {
     private TextView textViewRotZ;
     private TextView textViewScrX;
     private TextView textViewScrY;
-    private CheckBox checkBox;
 
     private SensorManager sm;
     private SensorEventListener accListener, rotListener;
@@ -56,6 +56,8 @@ public class TestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         textViewPosX = (TextView) findViewById(R.id.textViewPosX);
         textViewPosY = (TextView) findViewById(R.id.textViewPosY);
         textViewPosZ = (TextView) findViewById(R.id.textViewPosZ);
@@ -64,7 +66,6 @@ public class TestActivity extends Activity {
         textViewRotZ = (TextView) findViewById(R.id.textViewRotZ);
         textViewScrX = (TextView) findViewById(R.id.textViewScreenX);
         textViewScrY = (TextView) findViewById(R.id.textViewScreenY);
-        checkBox = (CheckBox) findViewById(R.id.checkBox);
         accValues = new float[3];
         rotValues = new float[4];
         reset(null);
@@ -160,44 +161,38 @@ public class TestActivity extends Activity {
             directionVector[3] = 0f;
 
             //directionVector = multiplyQuatWithVector(rotationQuat, directionVector);
-            if (!checkBox.isChecked()) {
-                if (directionVector[2] != 0) {
-                    float t = 1 / directionVector[2];
-                    float[] tempCoordinates = new float[2];
-                    for (int i = 0; i < 2; i++) {
-                        tempCoordinates[i] = t * directionVector[i];
-                        if (tempCoordinates[i] > 1.0f)
-                            tempCoordinates[i] = 1.0f;
-                        else if (tempCoordinates[i] < -1.0f)
-                            tempCoordinates[i] = -1.0f;
-                    }
-                    coordinates.setX(-tempCoordinates[0]);
-                    coordinates.setY(-tempCoordinates[1]);
+            /*
+            if (directionVector[2] != 0) {
+                float t = 1 / directionVector[2];
+                float[] tempCoordinates = new float[2];
+                for (int i = 0; i < 2; i++) {
+                    tempCoordinates[i] = t * directionVector[i];
+                    if (tempCoordinates[i] > 1.0f)
+                        tempCoordinates[i] = 1.0f;
+                    else if (tempCoordinates[i] < -1.0f)
+                        tempCoordinates[i] = -1.0f;
                 }
+                coordinates.setX(-tempCoordinates[0]);
+                coordinates.setY(-tempCoordinates[1]);
             }
-            else {
-                if (directionVector[0] != 0) {
-                    float t = 1 / directionVector[0];
-                    float[] tempCoordinates = new float[2];
-                    for (int i = 1; i < 3; i++) {
-                        tempCoordinates[i - 1] = t * directionVector[i];
-                        if (tempCoordinates[i - 1] > 1.0f)
-                            tempCoordinates[i - 1] = 1.0f;
-                        else if (tempCoordinates[i - 1] < -1.0f)
-                            tempCoordinates[i - 1] = -1.0f;
-                    }
-                    coordinates.setX(-tempCoordinates[0]);
-                    coordinates.setY(-tempCoordinates[1]);
+            */
+
+            if (directionVector[0] != 0) {
+                float t = 1 / directionVector[0];
+                float[] tempCoordinates = new float[2];
+                for (int i = 1; i < 3; i++) {
+                    tempCoordinates[i - 1] = t * directionVector[i];
+                    if (tempCoordinates[i - 1] > 1.0f)
+                        tempCoordinates[i - 1] = 1.0f;
+                    else if (tempCoordinates[i - 1] < -1.0f)
+                        tempCoordinates[i - 1] = -1.0f;
                 }
+                coordinates.setX(-tempCoordinates[0]);
+                coordinates.setY(-tempCoordinates[1]);
             }
         }
         else {
-            if (checkBox.isChecked()) {
-                directionVector[0] = 1.0f;
-            }
-            else {
-                directionVector[2] = 1.0f;
-            }
+            directionVector[0] = 1.0f;
             rotInit = true;
         }
         System.arraycopy(rotData, 0, currRot, 0, 4);
