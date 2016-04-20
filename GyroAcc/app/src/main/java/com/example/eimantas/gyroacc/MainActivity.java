@@ -2,15 +2,18 @@ package com.example.eimantas.gyroacc;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.Locale;
 
 public class MainActivity extends Activity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {;
         Locale.setDefault(Locale.US);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
