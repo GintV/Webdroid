@@ -215,6 +215,9 @@ public class CalibrateActivity extends Activity {
         try {
             webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
             webSocket.connect();
+            if (!webSocket.isConnected()) {
+                webSocket = new WebSocketControl(new URI("ws://webdroid.cf:80"));
+            }
             webSocketTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {

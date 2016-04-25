@@ -235,6 +235,9 @@ public class TestActivity extends Activity {
         try {
             webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
             webSocket.connect();
+            if (!webSocket.isConnected()) {
+                webSocket = new WebSocketControl(new URI("ws://webdroid.cf:80"));
+            }
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
