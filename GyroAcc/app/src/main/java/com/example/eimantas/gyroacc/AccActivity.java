@@ -9,8 +9,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class AccActivity extends Activity {
-    /*
+
     private TextView textViewX;
     private TextView textViewY;
     private TextView textViewZ;
@@ -26,6 +31,16 @@ public class AccActivity extends Activity {
     private TextView textPosY;
     private TextView textPosZ;
 
+
+    private Timer webSocketTimer;
+    private WebSocketControl webSocket;
+    protected boolean in;
+
+    private Sensor acc;
+    private SensorManager sm;
+    private SensorEventListener accListener;
+
+    protected LinearPosition linearPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,61 +61,27 @@ public class AccActivity extends Activity {
         textPosY = (TextView) findViewById(R.id.textViewPosY);
         textPosZ = (TextView) findViewById(R.id.textViewPosZ);
 
-        SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
-        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+        acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sm.registerListener(new SensorEventListener() {
-            static final float NS2S = 1.0f / 1000000000.0f;
-
-            float[] last_val_acc = null;
-            float[] real_acc = null;
-
-            float[] last_val_velo = null;
-            float[] velocity = null;
-
-            float[] position = null;
-            long last_timestamp = 0;
 
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (last_val_acc == null) {
+                //SensorManager.getRotationMatrixFromVector(rotationMatrix, values);
 
-                    real_acc = new float[3];
-                    last_val_acc = new float[3];
-
-                    last_val_velo = new float[3];
-                    velocity = new float[3];
-                    position = new float[3];
-
-
-                    last_val_acc[0] = last_val_acc[1] = last_val_acc[2] = 0f;
-                    last_val_velo[0] = last_val_velo[1] = last_val_velo[2] = 0f;
-
-                    last_timestamp = event.timestamp;
-                } else {
-
-                    changeText(event.values[0], event.values[1], event.values[2]);
-
-                    float dt = (event.timestamp - last_timestamp) * NS2S;
-
-                    for (int index = 0; index < 3; index++) {
-                        //if (Math.abs(event.values[index]) > 0.2f)
-                        velocity[index] += (event.values[index] + last_val_acc[index]) / 2 * dt;
-
-                        position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
-                        //else if (real_acc[index] > 3.0f) {
-                            //velocity[index] += (3.0f + last_val_acc[index]) / 2 * dt;
-                            //position[index] += (velocity[index] + last_val_velo[index]) / 2 * dt;
-                        //}
-                    }
-
-
-                    change(velocity[0], velocity[1], velocity[2], position[0], position[1], position[2]);
-
-                    System.arraycopy(event.values, 0, last_val_acc, 0, 3);
-                    System.arraycopy(velocity, 0, last_val_velo, 0, 3);
-                    last_timestamp = event.timestamp;
+                if(!in) {
+                    linearPosition = new LinearPosition(event.timestamp);
+                    in = true;
                 }
+
+                linearPosition.processLinearMotion(event.values[0], event.values[1], event.values[2], event.timestamp);
+                //positionFromRotation.processRotation(rotationMatrix);
+
+                //changeText(positionFromRotation.getXCoordinateMonitor(), -positionFromRotation.getYCoordinateMonitor(), positionFromRotation.getPointerOrientation());
+                linearPosition.toJSON();
+
+                changeText((float) linearPosition.getLinearMotion(), (float) linearPosition.getCurrentSpeed(), (float) linearPosition.getLinearAcceleration());
             }
 
             @Override
@@ -110,11 +91,53 @@ public class AccActivity extends Activity {
         }, acc, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
+    public void calibrate(View view) {
+        in = false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sm.unregisterListener(accListener);
+        webSocketTimer.cancel();
+        webSocket.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sm.registerListener(accListener, acc, SensorManager.SENSOR_DELAY_FASTEST);
+
+        webSocketTimer = new Timer();
+
+        try {
+            webSocket = new WebSocketControl(new URI("ws://218.gaikaz.tk:80"));
+            webSocket.connect();
+            webSocketTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        String data = linearPosition.toJSON();
+                        if (data != null) {
+                            webSocket.send(data);
+                        }
+                    }
+                    catch (Exception ex) {
+
+                    }
+                }
+            }, 0, 5);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void changeText(float x, float y, float z) {
         textViewX.setText(String.format("%2.2f", x));
         textViewY.setText(String.format("%2.2f", y));
         textViewZ.setText(String.format("%2.2f", z));
 
+        /*
         if (Float.compare(Float.parseFloat(textViewXMax.getText().toString()), x) > 0) {
             textViewXMax.setText((String.format("%2.2f", x)));
         }
@@ -124,6 +147,7 @@ public class AccActivity extends Activity {
         if (Float.compare(Float.parseFloat(textViewZMax.getText().toString()), z) > 0) {
             textViewZMax.setText((String.format("%2.2f", z)));
         }
+        */
     }
 
     protected void change(float speedX, float speedY, float speedZ, float posX, float posY, float posZ) {
@@ -147,5 +171,5 @@ public class AccActivity extends Activity {
 
 
     }
-    */
+
 }

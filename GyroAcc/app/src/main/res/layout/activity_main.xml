@@ -46,4 +46,16 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="150sp"
+        android:layout_height="120sp"
+        android:text="Linea Motion"
+        android:id="@+id/buttonAcc"
+        android:onClick="openAccActivity"
+        android:layout_below="@+id/buttonTest"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
 </RelativeLayout>

@@ -38,4 +38,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, AndroidQrCodeExample.class);
         startActivity(intent);
     }
+
+    public void openAccActivity(View view) {
+        Intent intent = new Intent(this, AccActivity.class);
+        startActivity(intent);
+    }
 }
