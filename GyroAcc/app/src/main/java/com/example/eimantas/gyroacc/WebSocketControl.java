@@ -23,7 +23,6 @@ public class WebSocketControl extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         Log.i("Websocket", "Opened");
-        this.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL + " " + Build.SERIAL);
         connected = true;
     }
 
