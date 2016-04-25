@@ -13,14 +13,18 @@ import java.net.URI;
  */
 public class WebSocketControl extends WebSocketClient {
 
+    private boolean connected;
+
     public WebSocketControl(URI serverURI) {
         super(serverURI);
+        connected = false;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         Log.i("Websocket", "Opened");
         this.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL + " " + Build.SERIAL);
+        connected = true;
     }
 
     @Override
@@ -31,10 +35,15 @@ public class WebSocketControl extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         Log.i("Websocket", "Closed " + reason);
+        connected = false;
     }
 
     @Override
     public void onError(Exception ex) {
         Log.i("Websocket", "Error " + ex.getMessage());
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

@@ -50,7 +50,9 @@ public class ChatActivity extends Activity {
         });
 
         try {
-            openWebSocket(new URI("ws://218.gaikaz.tk:80"));
+            if (!openWebSocket(new URI("ws://218.gaikaz.tk:80"))) {
+                openWebSocket(new URI("ws://webdroid.cf:80"));
+            }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -93,7 +95,7 @@ public class ChatActivity extends Activity {
         });
     }
 
-    protected void openWebSocket(URI uri) {
+    protected boolean openWebSocket(URI uri) {
         webSocket = new WebSocketControl(uri) {
            @Override
            public void onMessage(String message) {
@@ -101,6 +103,7 @@ public class ChatActivity extends Activity {
                 }
         };
         webSocket.connect();
+        return webSocket.isConnected();
     }
 
     public void changeWs(View view) {
