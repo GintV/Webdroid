@@ -237,6 +237,7 @@ public class TestActivity extends Activity {
             webSocket.connect();
             if (!webSocket.isConnected()) {
                 webSocket = new WebSocketControl(new URI("ws://webdroid.cf:80"));
+                webSocket.connect();
             }
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
