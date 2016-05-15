@@ -216,10 +216,19 @@ public class PositionFromRotation implements Data {
     public String toJSON() {
         ObjectMapper objectMapper = new ObjectMapper();
 
+        class Junk{
+            public String type;
+            public Pointer data;
+        }
+
+        Junk junk = new Junk();
+        junk.type = "joystick";
+        junk.data = this.pointer;
+
         String jsonString = null;
 
         try {
-            jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this.pointer);
+            jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(junk);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

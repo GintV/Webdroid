@@ -75,6 +75,8 @@ public class CalibrateActivity extends Activity {
 
         if(!in) {
             positionFromRotation.calibrate(rotationMatrix);
+            this.onStop();
+            this.onResume();
             in = true;
         }
 

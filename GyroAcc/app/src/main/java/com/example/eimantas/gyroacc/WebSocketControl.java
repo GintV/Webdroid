@@ -21,6 +21,7 @@ public class WebSocketControl extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
+        this.send("{\"type\":\"newPlayer\"}");
         Log.i("Websocket", "Opened");
         connected = true;
     }
