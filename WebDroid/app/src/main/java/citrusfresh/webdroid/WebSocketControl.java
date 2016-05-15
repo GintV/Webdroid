@@ -1,4 +1,4 @@
-package com.example.eimantas.gyroacc;
+package citrusfresh.webdroid;
 
 import android.util.Log;
 

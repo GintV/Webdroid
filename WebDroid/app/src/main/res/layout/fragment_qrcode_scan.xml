@@ -1,0 +1,66 @@
+ <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="citrusfresh.webdroid.QRcodeScanFragment"
+        android:layout_width="540dp"
+        android:layout_height="280dp"
+        android:background="@drawable/border"
+        android:layout_gravity="center">
+
+    <SurfaceView
+        android:layout_width="256dp"
+        android:layout_height="144dp"
+        android:id="@+id/camera_view"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/scan_qr"
+        android:id="@+id/textView"
+        android:gravity="center"
+        android:textSize="35sp"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2" />
+
+    <TextView
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="3"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:id="@+id/textView2"
+        android:background="@drawable/step_circle"
+        android:gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp" />
+     <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textAppearance="?android:attr/textAppearanceMedium"
+         android:text="@string/code_enter_explanation"
+         android:id="@+id/textView3"
+         android:layout_below="@+id/textView"
+         android:layout_alignLeft="@+id/textView"
+         android:layout_alignStart="@+id/textView"
+         android:layout_alignRight="@+id/textView"
+         android:layout_alignEnd="@+id/textView"
+         android:gravity="top|center"
+         android:layout_marginRight="15dp"
+         android:layout_marginLeft="15dp"
+         android:layout_alignBottom="@+id/textView2" />
+
+</RelativeLayout>
