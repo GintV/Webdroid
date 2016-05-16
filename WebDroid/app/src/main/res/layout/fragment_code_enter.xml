@@ -80,7 +80,7 @@
         android:layout_alignStart="@+id/button3"
         android:layout_above="@+id/button3"
         android:layout_below="@+id/textView2"
-        android:inputType="number"
+        android:inputType="text"
         android:gravity="center_vertical|center_horizontal"
         android:hint="@string/code_goes_here" />
 
