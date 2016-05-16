@@ -1,13 +1,15 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="WebDroid" parent="Theme.AppCompat" >
 
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:windowBackground" tools:ignore="NewApi">@color/colorBackground</item>
         <item name="android:colorForeground">@color/colorBackground</item>
 
         <item name="android:textColorPrimary">@color/primaryText</item>

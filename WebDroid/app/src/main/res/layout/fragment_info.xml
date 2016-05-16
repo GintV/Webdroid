@@ -22,7 +22,9 @@
         android:layout_marginRight="15dp"
         android:layout_below="@+id/textView2"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/primaryText"/>
 
     <TextView
         android:layout_width="wrap_content"
