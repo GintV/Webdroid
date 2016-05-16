@@ -21,7 +21,7 @@ public class WebSocketControl extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        Log.i("Websocket", "Opened");
+        Log.i("Websocket", "Opened " + this.uri);
         connected = true;
     }
 

@@ -15,16 +15,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/WebDroid">
+
         <activity
-            android:name=".StartActivity"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameActivity"></activity>
+        <activity
+            android:name=".GameActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

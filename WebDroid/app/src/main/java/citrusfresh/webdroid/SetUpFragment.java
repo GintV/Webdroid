@@ -1,25 +1,31 @@
 package citrusfresh.webdroid;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ToggleButton;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SetUpFragment.OnFragmentInteractionListener} interface
+ * {@link OnPlayerInfoChangeListener} interface
  * to handle interaction events.
  * Use the {@link SetUpFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SetUpFragment extends Fragment {
+public class SetUpFragment extends Fragment implements View.OnClickListener {
 
-    private OnFragmentInteractionListener mListener;
+    private OnPlayerInfoChangeListener mListener;
+    private EditText name;
+    private EditText initials;
+    private ToggleButton ready;
+    private Button update;
 
     public SetUpFragment() {
         // Required empty public constructor
@@ -44,24 +50,24 @@ public class SetUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_set_up, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        View layout = inflater.inflate(R.layout.fragment_set_up, container, false);
+        ready = (ToggleButton) layout.findViewById(R.id.buttonReady);
+        ready.setOnClickListener(this);
+        update = (Button) layout.findViewById(R.id.buttonUpdate);
+        update.setOnClickListener(this);
+        name = (EditText) layout.findViewById(R.id.editTextName);
+        initials = (EditText) layout.findViewById(R.id.editTextInitials);
+        return layout;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnPlayerInfoChangeListener) {
+            mListener = (OnPlayerInfoChangeListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnPlayerInfoChangeListener");
         }
     }
 
@@ -69,6 +75,33 @@ public class SetUpFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(mListener != null) {
+            switch(v.getId()) {
+                case R.id.buttonReady:
+                    if (ready.isChecked()) {
+                        name.setEnabled(false);
+                        initials.setEnabled(false);
+                        update.setText(getString(R.string.calibrate));
+                    }
+                    else {
+                        name.setEnabled(true);
+                        initials.setEnabled(true);
+                        update.setText(getString(R.string.update_info));
+                    }
+                    break;
+                case R.id.buttonUpdate:
+                    if (ready.isChecked()) {
+                        mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", ready.isChecked(), true);
+                        return;
+                    }
+                    break;
+            }
+            mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", ready.isChecked(), false);
+        }
     }
 
     /**
@@ -81,8 +114,8 @@ public class SetUpFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnPlayerInfoChangeListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onPlayerInfoChange(String name, String initials, String color, boolean isReady, boolean isCalibrating);
     }
 }

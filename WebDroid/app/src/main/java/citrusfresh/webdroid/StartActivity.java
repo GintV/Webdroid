@@ -20,6 +20,7 @@ public class StartActivity extends FragmentActivity implements InfoFragment.OnIn
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_start);
 
         if (findViewById(R.id.fragment_container) != null) {

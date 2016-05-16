@@ -6,21 +6,22 @@ import java.util.Random;
  * Created by Gintaras on 2016.05.16.
  */
 
-public class Data{
+public class Data {
     private Random random;
 
     private String sessionID_;
     private String playerName_;
-    private char playerInitials_;
+    private String playerInitials_;
     private String playerColor_;
     private double playerPositionX_;
     private double playerPositionY_;
     private boolean playerIsCalibrating_;
+    private boolean playerIsReady_;
 
     private class NewPlayer{
         private String sessionID;
         private String playerName;
-        private char playerInitials;
+        private String playerInitials;
         private String playerColor;
 
         public NewPlayer(){
@@ -53,10 +54,11 @@ public class Data{
 
     private PlayerPosition playerPosition;
 
-    private class PlayerInfoChange{
+    public class PlayerInfoChange{
         private String playerName;
-        private char playerInitials;
+        private String playerInitials;
         private String playerColor;
+        private boolean playerIsReady;
 
         public PlayerInfoChange(){
             this.update();
@@ -66,6 +68,7 @@ public class Data{
             this.playerName = playerName_;
             this.playerInitials = playerInitials_;
             this.playerColor = playerColor_;
+            this.playerIsReady = playerIsReady_;
         }
     }
 
@@ -91,11 +94,12 @@ public class Data{
 
         this.sessionID_ = "";
         this.playerName_ = "player" + random.nextInt(9999);
-        this.playerInitials_ = ' ';
+        this.playerInitials_ = " ";
         this.playerColor_ = "random";
         this.playerPositionX_ = 0.0;
         this.playerPositionY_ = 0.0;
         this.playerIsCalibrating_ = false;
+        this.playerIsReady_ = false;
 
         this.newPlayer = new NewPlayer();
         this.playerPosition = new PlayerPosition();
@@ -120,6 +124,10 @@ public class Data{
         return this.newConnection;
     }
 
+    public boolean getPlayerIsReady(){
+        return this.playerIsReady_;
+    }
+
     public void setSessionID(String sessionID){
         this.sessionID_ = sessionID;
         this.newPlayer.update();
@@ -132,7 +140,7 @@ public class Data{
         this.playerInfoChange.update();
     }
 
-    public void setPlayerInitials(char playerInitials){
+    public void setPlayerInitials(String playerInitials){
         this.playerInitials_ = playerInitials;
         this.newPlayer.update();
         this.playerInfoChange.update();
@@ -152,5 +160,9 @@ public class Data{
 
     public void setPlayerIsCalibrating(boolean playerIsCalibrating){
         this.playerIsCalibrating_ = playerIsCalibrating;
+    }
+
+    public void setPlayerIsReady(boolean isPlayerReady) {
+        this.playerIsReady_ = isPlayerReady;
     }
 }

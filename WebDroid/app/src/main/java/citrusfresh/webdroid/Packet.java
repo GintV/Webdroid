@@ -7,14 +7,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Created by Gintaras on 2016.05.15.
  */
 public class Packet {
-    private static final String TYPE_NEW_PLAYER = "newPlayer";
-    private static final String TYPE_PLAYER_INFO_CHANGE = "changePlayer";
-    private static final String TYPE_PLAYER_POSITION = "joystick";
-    private static final String TYPE_PLAYER_READY = "readyPlayer";
-    private static final String TYPE_NEW_CONNECTION = "newConnection";
+    public static final String TYPE_NEW_PLAYER = "newPlayer";
+    public static final String TYPE_PLAYER_INFO_CHANGE = "changePlayer";
+    public static final String TYPE_PLAYER_POSITION = "joystick";
+    public static final String TYPE_NEW_CONNECTION = "newConnection";
 
     private String type;
     private Object data;
+
+    public Packet() {
+
+    }
+
+    public Packet(String type, Object data) {
+        this.type = type;
+        this.data = data;
+    }
 
     public void setType(String type){
         this.type = type;

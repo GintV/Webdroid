@@ -14,5 +14,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="scan_qr">Scan the QR code</string>
+    <string name="testServer">ws://218.gaikaz.tk:80</string>
+    <string name="mainServer">ws://webdroid.cf:80</string>
+    <string name="color">Color</string>
+    <string name="initials">Initials</string>
+    <string name="name_hint">Your name</string>
+    <string name="your_information">Your information</string>
+    <string name="ready">Ready</string>
+    <string name="update_info">Update info</string>
+    <string name="calibrate">Calibrate</string>
 
 </resources>

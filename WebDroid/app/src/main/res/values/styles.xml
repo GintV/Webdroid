@@ -1,5 +1,5 @@
 <resources>
-    
+
     <style name="WebDroid" parent="Theme.AppCompat" >
 
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
