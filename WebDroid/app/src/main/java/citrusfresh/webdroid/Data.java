@@ -24,6 +24,22 @@ public class Data {
         private String playerInitials;
         private String playerColor;
 
+        public String getPlayerColor() {
+            return playerColor;
+        }
+
+        public String getSessionID() {
+            return sessionID;
+        }
+
+        public String getPlayerName() {
+            return playerName;
+        }
+
+        public String getPlayerInitials() {
+            return playerInitials;
+        }
+
         public NewPlayer(){
             this.update();
         }
@@ -42,6 +58,14 @@ public class Data {
         private double playerPositionX;
         private double playerPositionY;
 
+        public double getPlayerPositionX() {
+            return playerPositionX;
+        }
+
+        public double getPlayerPositionY() {
+            return playerPositionY;
+        }
+
         public PlayerPosition(){
             this.update();
         }
@@ -54,11 +78,27 @@ public class Data {
 
     private PlayerPosition playerPosition;
 
-    public class PlayerInfoChange{
+    private class PlayerInfoChange {
         private String playerName;
         private String playerInitials;
         private String playerColor;
         private boolean playerIsReady;
+
+        public String getPlayerName() {
+            return playerName;
+        }
+
+        public String getPlayerInitials() {
+            return playerInitials;
+        }
+
+        public String getPlayerColor() {
+            return playerColor;
+        }
+
+        public boolean isPlayerIsReady() {
+            return playerIsReady;
+        }
 
         public PlayerInfoChange(){
             this.update();
@@ -76,6 +116,10 @@ public class Data {
 
     private class NewConnection{
         private String sessionID;
+
+        public String getSessionID() {
+            return sessionID;
+        }
 
         public NewConnection(){
             this.update();

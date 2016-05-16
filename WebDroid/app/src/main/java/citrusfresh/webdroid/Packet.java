@@ -2,6 +2,7 @@ package citrusfresh.webdroid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Created by Gintaras on 2016.05.15.
@@ -31,6 +32,12 @@ public class Packet {
     public void setData(Object data){
         this.data = data;
     }
+
+    public String getType(){
+        return type;
+    }
+
+    public Object getData(){ return data; }
 
     public String toJSON() {
         ObjectMapper objectMapper = new ObjectMapper();

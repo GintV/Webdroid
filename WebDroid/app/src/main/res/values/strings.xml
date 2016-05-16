@@ -22,6 +22,6 @@
     <string name="your_information">Your information</string>
     <string name="ready">Ready</string>
     <string name="update_info">Update info</string>
-    <string name="calibrate">Calibrate</string>
+    <string name="calibrate">Calib.</string>
 
 </resources>

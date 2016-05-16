@@ -6,6 +6,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,7 +29,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     protected float[] rotationMatrix;
     protected PositionFromRotation positionFromRotation;
     protected boolean in;
-    private Timer timer;
+    private static Timer timer;
     private boolean firstConnect;
 
     private String[] allColors;
@@ -57,6 +62,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer = new Data();
         thisPlayer.setSessionID(sessionId);
         firstConnect = true;
+        timer = new Timer();
         rotationMatrix = new float[9];
         positionFromRotation = new PositionFromRotation();
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -79,7 +85,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     protected void onResume() {
         super.onResume();
 
-        timer = new Timer();
         // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
         try {
             webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
@@ -105,6 +110,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 firstConnect = false;
                 toSend.setType(Packet.TYPE_NEW_CONNECTION);
                 toSend.setData(thisPlayer.getNewConnection());
+                String data = toSend.toJSON();
+                if (data != null) {
+                    webSocket.send(data);
+                }
             }
             if (thisPlayer.getPlayerIsReady()) {
                 startTimerTask();
@@ -128,7 +137,13 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     @Override
     public void onStop() {
         super.onStop();
+        timer.cancel();
+    }
+
+    @Override
+    public void onDestroy() {
         webSocket.close();
+        super.onDestroy();
     }
 
     @Override
@@ -140,6 +155,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer.setPlayerIsCalibrating(isCalibrating);
         Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
         String data = toSend.toJSON();
+
+        webSocket.send(data);
         if (data != null) {
             webSocket.send(data);
             if (thisPlayer.getPlayerIsReady()) {
@@ -165,6 +182,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     private void startTimerTask() {
+        timer = new Timer();
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

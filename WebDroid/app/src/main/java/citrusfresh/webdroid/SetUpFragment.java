@@ -79,9 +79,11 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        boolean isReady = false;
         if(mListener != null) {
             switch(v.getId()) {
                 case R.id.buttonReady:
+                    isReady = !ready.isChecked();
                     if (ready.isChecked()) {
                         name.setEnabled(false);
                         initials.setEnabled(false);
@@ -94,13 +96,14 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
                     }
                     break;
                 case R.id.buttonUpdate:
+                    isReady = !ready.isChecked();
                     if (ready.isChecked()) {
-                        mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", ready.isChecked(), true);
+                        mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", isReady, true);
                         return;
                     }
                     break;
             }
-            mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", ready.isChecked(), false);
+            mListener.onPlayerInfoChange(name.getText().toString(), initials.getText().toString(), "FFFFFF", isReady, false);
         }
     }
 
