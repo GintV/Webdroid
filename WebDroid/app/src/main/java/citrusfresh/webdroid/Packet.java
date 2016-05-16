@@ -6,11 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Created by Gintaras on 2016.05.15.
  */
-public abstract class Packet {
+public class Packet {
     private static final String TYPE_NEW_PLAYER = "newPlayer";
     private static final String TYPE_PLAYER_INFO_CHANGE = "changePlayer";
     private static final String TYPE_PLAYER_POSITION = "joystick";
     private static final String TYPE_PLAYER_READY = "readyPlayer";
+    private static final String TYPE_NEW_CONNECTION = "newConnection";
 
     private String type;
     private Object data;
