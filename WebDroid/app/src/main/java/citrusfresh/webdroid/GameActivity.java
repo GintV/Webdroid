@@ -82,9 +82,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    public void onResume() {
         // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
         try {
             webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
@@ -125,6 +123,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         }
 
         sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
+        super.onResume();
     }
 
     @Override
@@ -142,6 +141,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     @Override
     public void onDestroy() {
+        timer.cancel();
         webSocket.close();
         super.onDestroy();
     }
@@ -153,24 +153,31 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer.setPlayerColor(color);
         thisPlayer.setPlayerIsReady(isReady);
         thisPlayer.setPlayerIsCalibrating(isCalibrating);
-        Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
-        String data = toSend.toJSON();
 
-        webSocket.send(data);
-        if (data != null) {
-            webSocket.send(data);
+        if (!isCalibrating) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+                    String data = toSend.toJSON();
+                    webSocket.send(data);
+                }
+            });
             if (thisPlayer.getPlayerIsReady()) {
                 startTimerTask();
             } else {
                 timer.cancel();
             }
         }
+        else {
+            in = false;
+        }
     }
 
     private void calculateRotation(float[] values) {
         SensorManager.getRotationMatrixFromVector(rotationMatrix, values);
 
-        if(!in) {
+        if (!in) {
             positionFromRotation.calibrate(rotationMatrix);
             this.onStop();
             this.onResume();
