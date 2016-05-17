@@ -6,6 +6,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,31 +32,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     private String[] allColors;
     private ArrayList<String> availableColors;
     private Data[] allPlayers;
-    private Data thisPlayer;
+    private final Data thisPlayer = new Data();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        if (findViewById(R.id.fragment_container_game) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            LobbyFragment firstFragment = new LobbyFragment();
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container_game, firstFragment).commit();
-        }
         String sessionId = getIntent().getStringExtra("sessionId");
-        thisPlayer = new Data();
         thisPlayer.setSessionID(sessionId);
         firstConnect = true;
         timer = new Timer();
@@ -74,10 +59,28 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
             }
         };
+
+        if (findViewById(R.id.fragment_container_game) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create a new Fragment to be placed in the activity layout
+            LobbyFragment firstFragment = new LobbyFragment();
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container_game, firstFragment).commit();
+        }
     }
 
     @Override
     public void onResume() {
+        super.onResume();
         // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
         try {
             webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
@@ -89,7 +92,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
             synchronized (webSocketLock) {
                 webSocket.connect();
             }
-            Thread.sleep(50);
+            Thread.sleep(500);
             if (!webSocket.isConnected()) {
                 webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
                     @Override
@@ -100,22 +103,25 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 synchronized (webSocketLock) {
                     webSocket.connect();
                 }
-                Thread.sleep(50);
+                Thread.sleep(500);
             }
-            if (firstConnect) {
-                Packet toSend = new Packet();
-                firstConnect = false;
-                toSend.setType(Packet.TYPE_NEW_CONNECTION);
-                toSend.setData(thisPlayer.getNewConnection());
-                String data = toSend.toJSON();
-                if (data != null) {
-                    synchronized (webSocketLock) {
-                        webSocket.send(data);
+            // TODO sukurti metoda, kuris bus kvieciamas onConnect ir iskelti sita dali i ji
+            if (webSocket.isConnected()) {
+                if (firstConnect) {
+                    Packet toSend = new Packet();
+                    firstConnect = false;
+                    toSend.setType(Packet.TYPE_NEW_CONNECTION);
+                    toSend.setData(thisPlayer.getNewConnection());
+                    String data = toSend.toJSON();
+                    if (data != null) {
+                        synchronized (webSocketLock) {
+                            webSocket.send(data);
+                        }
                     }
                 }
-            }
-            if (thisPlayer.getPlayerIsReady()) {
-                startTimerTask();
+                if (thisPlayer != null && thisPlayer.getPlayerIsReady()) {
+                    startTimerTask();
+                }
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -124,25 +130,27 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         }
 
         sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
-        super.onResume();
     }
 
     @Override
     public void onPause() {
         sm.unregisterListener(rotListener);
         timer.cancel();
+        timer.purge();
         super.onPause();
     }
 
     @Override
     public void onStop() {
         timer.cancel();
+        timer.purge();
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
         timer.cancel();
+        timer.purge();
         webSocket.close();
         super.onDestroy();
     }
@@ -190,6 +198,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     private void startTimerTask() {
+        timer.cancel();
+        timer.purge();
         timer = new Timer();
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -210,6 +220,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     private void handleWebSocketMessage(String message) {
-
+        Log.i("Websocket", message);
     }
 }
