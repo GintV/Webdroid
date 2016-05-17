@@ -6,12 +6,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -22,7 +16,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     private final int SEND_RATE = 10;
 
-    private WebSocketControl webSocket;
+    private static WebSocketControl webSocket;
+    private final Object webSocketLock = new Object();
     private SensorManager sm;
     private SensorEventListener rotListener;
     private Sensor rotation;
@@ -91,8 +86,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     handleWebSocketMessage(message);
                 }
             };
-            webSocket.connect();
-            Thread.sleep(10);
+            synchronized (webSocketLock) {
+                webSocket.connect();
+            }
+            Thread.sleep(50);
             if (!webSocket.isConnected()) {
                 webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
                     @Override
@@ -100,8 +97,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                         handleWebSocketMessage(message);
                     }
                 };
-                webSocket.connect();
-                Thread.sleep(10);
+                synchronized (webSocketLock) {
+                    webSocket.connect();
+                }
+                Thread.sleep(50);
             }
             if (firstConnect) {
                 Packet toSend = new Packet();
@@ -110,7 +109,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 toSend.setData(thisPlayer.getNewConnection());
                 String data = toSend.toJSON();
                 if (data != null) {
-                    webSocket.send(data);
+                    synchronized (webSocketLock) {
+                        webSocket.send(data);
+                    }
                 }
             }
             if (thisPlayer.getPlayerIsReady()) {
@@ -128,15 +129,15 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     @Override
     public void onPause() {
-        super.onPause();
         sm.unregisterListener(rotListener);
         timer.cancel();
+        super.onPause();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
         timer.cancel();
+        super.onStop();
     }
 
     @Override
@@ -155,19 +156,21 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer.setPlayerIsCalibrating(isCalibrating);
 
         if (!isCalibrating) {
+            Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+            String data = toSend.toJSON();
+            synchronized (webSocketLock) {
+                webSocket.send(data);
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
-                    String data = toSend.toJSON();
-                    webSocket.send(data);
+                    if (thisPlayer.getPlayerIsReady()) {
+                        startTimerTask();
+                    } else {
+                        timer.cancel();
+                    }
                 }
             });
-            if (thisPlayer.getPlayerIsReady()) {
-                startTimerTask();
-            } else {
-                timer.cancel();
-            }
         }
         else {
             in = false;
@@ -179,8 +182,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
         if (!in) {
             positionFromRotation.calibrate(rotationMatrix);
-            this.onStop();
-            this.onResume();
             in = true;
         }
 
@@ -197,7 +198,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 try {
                     String data = new Packet(Packet.TYPE_PLAYER_POSITION, thisPlayer.getPlayerPosition()).toJSON();
                     if (data != null) {
-                        webSocket.send(data);
+                        synchronized (webSocketLock) {
+                            webSocket.send(data);
+                        }
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
