@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.java_websocket.handshake.ServerHandshake;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     private String[] allColors;
     private ArrayList<String> availableColors;
     private Data[] allPlayers;
-    private final Data thisPlayer = new Data();;
+    private final Data thisPlayer = new Data();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,11 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 public void onMessage(String message) {
                     handleWebSocketMessage(message);
                 }
+
+                @Override
+                public void onOpen(ServerHandshake handshakedata) {
+                    super.onOpen(handshakedata);
+                    handleOnOpen(); }
             };
             synchronized (webSocketLock) {
                 webSocket.connect();
@@ -99,28 +106,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     public void onMessage(String message) {
                         handleWebSocketMessage(message);
                     }
+
+                    @Override
+                    public void onOpen(ServerHandshake handshakedata) {
+                        super.onOpen(handshakedata);
+                        handleOnOpen(); }
                 };
                 synchronized (webSocketLock) {
                     webSocket.connect();
-                }
-                Thread.sleep(500);
-            }
-            // TODO sukurti metoda, kuris bus kvieciamas onConnect ir iskelti sita dali i ji
-            if (webSocket.isConnected()) {
-                if (firstConnect) {
-                    Packet toSend = new Packet();
-                    firstConnect = false;
-                    toSend.setType(Packet.TYPE_NEW_CONNECTION);
-                    toSend.setData(thisPlayer.getNewConnection());
-                    String data = toSend.toJSON();
-                    if (data != null) {
-                        synchronized (webSocketLock) {
-                            webSocket.send(data);
-                        }
-                    }
-                }
-                if (thisPlayer != null && thisPlayer.getPlayerIsReady()) {
-                    startTimerTask();
                 }
             }
         } catch (URISyntaxException e) {
@@ -166,8 +159,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         if (!isCalibrating) {
             Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
             String data = toSend.toJSON();
-            synchronized (webSocketLock) {
-                webSocket.send(data);
+            if (webSocket.isConnected()) {
+                synchronized (webSocketLock) {
+                    webSocket.send(data);
+                }
             }
             runOnUiThread(new Runnable() {
                 @Override
@@ -208,8 +203,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 try {
                     String data = new Packet(Packet.TYPE_PLAYER_POSITION, thisPlayer.getPlayerPosition()).toJSON();
                     if (data != null) {
-                        synchronized (webSocketLock) {
-                            webSocket.send(data);
+                        if (webSocket.isConnected()) {
+                            synchronized (webSocketLock) {
+                                webSocket.send(data);
+                            }
                         }
                     }
                 } catch (Exception ex) {
@@ -221,5 +218,24 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     private void handleWebSocketMessage(String message) {
         Log.i("Websocket", message);
+    }
+
+    // TODO siusti zaidejo ID, jei ne pirmas connection
+    private void handleOnOpen() {
+        if (firstConnect) {
+            firstConnect = false;
+            Packet toSend = new Packet();
+            toSend.setType(Packet.TYPE_NEW_CONNECTION);
+            toSend.setData(thisPlayer.getNewConnection());
+            String data = toSend.toJSON();
+            if (data != null) {
+                synchronized (webSocketLock) {
+                    webSocket.send(data);
+                }
+            }
+        }
+        if (thisPlayer.getPlayerIsReady()) {
+            startTimerTask();
+        }
     }
 }
