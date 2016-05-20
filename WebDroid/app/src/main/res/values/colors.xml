@@ -6,4 +6,5 @@
     <color name="colorBackground">#deddd6</color>
     <color name="primaryText">#96000000</color>
     <color name="secondaryText">#64000000</color>
+    <color name="primaryTextInverse">#deddd6</color>
 </resources>

@@ -13,11 +13,11 @@
         <item name="android:colorForeground">@color/colorBackground</item>
 
         <item name="android:textColorPrimary">@color/primaryText</item>
-        <item name="android:textColorPrimaryInverse">@color/primaryText</item>
+        <item name="android:textColorPrimaryInverse">@color/primaryTextInverse</item>
 
         <item name="android:textColorTertiary">@color/secondaryText</item>
         <item name="android:textColorSecondary">@color/secondaryText</item>
-        <item name="android:textColorSecondaryInverse">@color/secondaryText</item>
+        <item name="android:textColorSecondaryInverse">@color/colorBackground</item>
         <item name="android:textColorHint">@color/secondaryText</item>
     </style>
 

@@ -1,11 +1,15 @@
 package citrusfresh.webdroid;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.text.Html;
 import android.util.Log;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -94,7 +98,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     super.onOpen(handshakedata);
-                    handleOnOpen(); }
+                    handleOnOpen();
+                }
             };
             synchronized (webSocketLock) {
                 webSocket.connect();
@@ -110,7 +115,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     @Override
                     public void onOpen(ServerHandshake handshakedata) {
                         super.onOpen(handshakedata);
-                        handleOnOpen(); }
+                        handleOnOpen();
+                    }
                 };
                 synchronized (webSocketLock) {
                     webSocket.connect();
@@ -149,6 +155,25 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(Html.fromHtml("<font color='#deddd6'>Do You really want to quit this session?</font>"))
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        pressBack();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                    }
+                }).show();
+    }
+
+    public void pressBack() {
+        super.onBackPressed();
+    }
+
+    @Override
     public void onPlayerInfoChange(String name, String initials, String color, boolean isReady, boolean isCalibrating) {
         thisPlayer.setPlayerName(name);
         thisPlayer.setPlayerInitials(initials);
@@ -174,8 +199,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     }
                 }
             });
-        }
-        else {
+        } else {
             in = false;
         }
     }
