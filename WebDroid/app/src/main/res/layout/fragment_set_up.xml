@@ -119,7 +119,7 @@
         android:layout_width="30sp"
         android:layout_height="30sp"
         android:id="@+id/imageViewColor"
-        android:background="@drawable/color_circle"
+        android:src="@drawable/color_circle"
         android:layout_below="@+id/editTextInitials"
         android:layout_toRightOf="@+id/textView6"
         android:layout_toEndOf="@+id/textView6"

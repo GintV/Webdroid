@@ -45,6 +45,11 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        availableColors = new ArrayList<>();
+        availableColors.add("#fdb913");
+        availableColors.add("#006a44");
+        availableColors.add("#c1272d");
+
         String sessionId = getIntent().getStringExtra("sessionId");
         thisPlayer.setSessionID(sessionId);
         firstConnect = true;
@@ -201,6 +206,23 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
             });
         } else {
             in = false;
+        }
+    }
+
+    @Override
+    public ArrayList<String> getAvailableColors() {
+        return availableColors;
+    }
+
+    @Override
+    public void onColorChange(String color) {
+        thisPlayer.setPlayerColor(color);
+        Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+        String data = toSend.toJSON();
+        if (webSocket.isConnected()) {
+            synchronized (webSocketLock) {
+                webSocket.send(data);
+            }
         }
     }
 

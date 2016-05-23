@@ -1,0 +1,34 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentBottom="true"
+    android:weightSum="2.0"
+    android:id="@+id/linearLayout"
+    android:layout_below="@+id/textView7"
+    android:gravity="center_vertical|center|center_horizontal">
+
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_margin="10dp"
+        android:minHeight="?attr/listPreferredItemHeight"
+        android:layout_gravity="center">
+    </ImageView>
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioButton"
+        android:layout_gravity="center" />
+
+</LinearLayout>
