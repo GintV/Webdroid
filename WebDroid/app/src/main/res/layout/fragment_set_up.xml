@@ -1,34 +1,99 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="citrusfresh.webdroid.SetUpFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/border">
+
     <TextView
-        android:layout_width="65sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Name"
-        android:id="@+id/textView4"
-        android:layout_gravity="center_vertical"
-        android:layout_below="@+id/textView5"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="8dp" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="25sp"
+        android:text="@string/your_information"
+        android:id="@+id/textView5"
+        android:layout_margin="5dp"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1">
+        <TextView
+            android:layout_width="65sp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/name"
+            android:id="@+id/textView4"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp" />
+        <EditText
+            android:layout_width="160sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextName"
+            android:hint="@string/name_hint"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout2">
+
+        <TextView
+            android:layout_width="65sp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/initials"
+            android:id="@+id/textView6"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp" />
+
+        <EditText
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextInitials"
+            android:hint="@string/initials_hint"
+            android:maxLength="3"
+            android:typeface="monospace"
+            android:inputType="textCapCharacters"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout3">
+
+        <TextView
+            android:layout_width="65sp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/color"
+            android:id="@+id/textView7"
+            android:layout_margin="8dp"
+            android:layout_gravity="center_vertical" />
+
+        <ImageView
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:id="@+id/imageViewColor"
+            android:src="@drawable/color_circle"
+            android:layout_marginTop="2sp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
         android:weightSum="2.0"
-        android:id="@+id/linearLayout"
-        android:layout_below="@+id/textView7">
+        android:id="@+id/linearLayout">
 
         <Button
             android:layout_width="match_parent"
@@ -41,8 +106,9 @@
             android:layout_marginBottom="15dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/primaryText"/>
+            android:textColor="@color/primaryText"
+            android:elegantTextHeight="false"
+            android:background="@color/colorPrimary" />
 
         <ToggleButton
             android:layout_width="match_parent"
@@ -60,69 +126,4 @@
             android:checked="false" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="25sp"
-        android:text="@string/your_information"
-        android:id="@+id/textView5"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp" />
-
-    <EditText
-        android:layout_width="160sp"
-        android:layout_height="wrap_content"
-        android:id="@+id/editTextName"
-        android:hint="@string/name_hint"
-        android:layout_below="@+id/textView5"
-        android:layout_toRightOf="@+id/textView4"
-        android:layout_toEndOf="@+id/textView4" />
-
-    <TextView
-        android:layout_width="65sp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/initials"
-        android:id="@+id/textView6"
-        android:layout_gravity="center_vertical"
-        android:layout_below="@+id/textView4"
-        android:layout_toLeftOf="@+id/editTextName"
-        android:layout_toStartOf="@+id/editTextName"
-        android:layout_margin="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/color"
-        android:id="@+id/textView7"
-        android:layout_below="@+id/textView6"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="8dp" />
-
-    <EditText
-        android:layout_width="50sp"
-        android:layout_height="wrap_content"
-        android:id="@+id/editTextInitials"
-        android:hint="INI"
-        android:layout_above="@+id/textView7"
-        android:layout_toRightOf="@+id/textView6"
-        android:layout_toEndOf="@+id/textView6"
-        android:maxLength="3"
-        android:typeface="monospace"
-        android:inputType="textCapCharacters" />
-
-    <ImageView
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        android:id="@+id/imageViewColor"
-        android:src="@drawable/color_circle"
-        android:layout_below="@+id/editTextInitials"
-        android:layout_toRightOf="@+id/textView6"
-        android:layout_toEndOf="@+id/textView6"
-        android:layout_marginTop="2sp" />
-
-</RelativeLayout>
+</LinearLayout>

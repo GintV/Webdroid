@@ -23,5 +23,7 @@
     <string name="ready">Ready</string>
     <string name="update_info">Update info</string>
     <string name="calibrate">Calib.</string>
+    <string name="name">Name</string>
+    <string name="initials_hint">INI</string>
 
 </resources>
