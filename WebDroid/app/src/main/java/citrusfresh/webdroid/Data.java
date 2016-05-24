@@ -152,6 +152,22 @@ public class Data {
 
     }
 
+    public Data(String name, String initials, String color, boolean isReady) {
+        this.sessionID_ = "";
+        this.playerName_ = name;
+        this.playerInitials_ = initials;
+        this.playerColor_ = color;
+        this.playerPositionX_ = 0.0;
+        this.playerPositionY_ = 0.0;
+        this.playerIsCalibrating_ = false;
+        this.playerIsReady_ = isReady;
+
+        this.newPlayer = new NewPlayer();
+        this.playerPosition = new PlayerPosition();
+        this.playerInfoChange = new PlayerInfoChange();
+        this.newConnection = new NewConnection();
+    }
+
     public NewPlayer getNewPlayer(){
         return this.newPlayer;
     }

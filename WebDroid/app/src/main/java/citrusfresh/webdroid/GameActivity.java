@@ -13,6 +13,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
+import android.view.WindowManager;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,11 +28,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GameActivity extends FragmentActivity implements SetUpFragment.OnPlayerInfoChangeListener {
+public class GameActivity extends FragmentActivity implements SetUpFragment.OnPlayerInfoChangeListener, LobbyFragment.OnLobbyInflatedListener {
 
     private final int SEND_RATE = 10;
 
-    private static WebSocketControl webSocket;
+    private WebSocketControl webSocket;
     private final Object webSocketLock = new Object();
     private SensorManager sm;
     private SensorEventListener rotListener;
@@ -40,20 +43,29 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     private static Timer timer;
     private boolean firstConnect;
 
+    private PlayerInfoFragment playerListFragment;
+
     private String[] allColors;
     private ArrayList<String> availableColors;
-    private Data[] allPlayers;
+    private ArrayList<Data> allPlayers;
     private final Data thisPlayer = new Data();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ((TextView) findViewById(R.id.textViewWaiting)).setText("");
+        allPlayers = new ArrayList<>();
 
         availableColors = new ArrayList<>();
         availableColors.add("#fdb913");
         availableColors.add("#006a44");
         availableColors.add("#c1272d");
+
+        allPlayers.add(new Data("Jonas", "JV", "#fdb913", true));
+        allPlayers.add(new Data("Petronis", "PPP", "#006a44", false));
+        allPlayers.add(new Data("Antantas", "TON", "#c1272d", true));
 
         String sessionId = getIntent().getStringExtra("sessionId");
         thisPlayer.setSessionID(sessionId);
@@ -111,6 +123,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 synchronized (webSocketLock) {
                     webSocket.connect();
                 }
+                /*
                 Thread.sleep(500);
 
                 if (!webSocket.isConnected()) {
@@ -130,10 +143,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                         webSocket.connect();
                     }
                 }
+                */
             }
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -179,6 +191,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     public void pressBack() {
+        synchronized (webSocketLock) {
+            webSocket.close();
+        }
         super.onBackPressed();
     }
 
@@ -211,6 +226,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         } else {
             in = false;
         }
+        switchToGame();
     }
 
     @Override
@@ -275,22 +291,75 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         Log.i("Websocket", message);
         Packet received = Packet.fromJSON(message);
         if (received != null) {
-            //ErrorMessage err = (ErrorMessage) received.getData();
-            Log.i("Websocket", "valio");
-            int index = message.indexOf("\"data\":");
-            String dataPart = message.substring(index + 7, message.length() - 1);
-            Log.i("Websocket", dataPart);
             ObjectMapper mapper = new ObjectMapper();
-            try {
-                ErrorMessage err = mapper.readValue(dataPart, ErrorMessage.class);
-                Log.i("Websocket", err.getErrorText());
-            } catch (IOException e) {
-                e.printStackTrace();
+            int index;
+            String dataPart;
+            switch(received.getType()) {
+                case "error":
+                    index = message.indexOf("\"data\":");
+                    dataPart = message.substring(index + 7, message.length() - 1);
+                    Log.i("Websocket", dataPart);
+                    try {
+                        final ErrorMessage err = mapper.readValue(dataPart, ErrorMessage.class);
+                        Runnable showToast = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast toast = Toast.makeText(getApplicationContext(), err.getErrorText(), Toast.LENGTH_LONG);
+                                toast.show();
+                                //finish();
+                            }
+                        };
+                        synchronized (webSocketLock) {
+                            webSocket.close();
+                        }
+                        runOnUiThread(showToast);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "colors":
+                    index = message.indexOf("\"data\":");
+                    dataPart = message.substring(index + 7, message.length() - 1);
+                    Log.i("Websocket", dataPart);
+                    try {
+                        allColors = mapper.readValue(dataPart, String[].class);
+                        setAvailableColors();
+                        ((TextView) findViewById(R.id.textViewWaiting)).setText("");
+                        switchToLobby();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "gameInfo":
+                    index = message.indexOf("\"data\":");
+                    dataPart = message.substring(index + 7, message.length() - 1);
+                    Log.i("Websocket", dataPart);
+                    int indexStart = dataPart.indexOf("\"status\":");
+                    index = dataPart.indexOf("\",");
+                    String status = dataPart.substring(indexStart + 10, index);
+                    indexStart = index + 12;
+                    index = dataPart.indexOf("\"}]") + 3;
+                    String playerArrayJSON = dataPart.substring(indexStart, index);
+                    try {
+                        Player[] players = mapper.readValue(playerArrayJSON, Player[].class);
+                        allPlayers.clear();
+                        for(Player p : players) {
+                            allPlayers.add(new Data(p.getName(), p.getInitials(), p.getColor(), p.isReady()));
+                        }
+                        setAvailableColors();
+                        if (playerListFragment != null) {
+                            playerListFragment.setPlayers(allPlayers);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+
             }
         }
     }
 
-    // TODO siusti zaidejo ID, jei ne pirmas connection
     private void handleOnOpen() {
         if (firstConnect) {
             firstConnect = false;
@@ -310,11 +379,13 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     private void switchToGame() {
+        playerListFragment = null;
         makeTransaction(InGameFragment.newInstance(thisPlayer.getPlayerInfoChange().getPlayerColor()), "game");
     }
 
     private void switchToLobby() {
-        makeTransaction(new LobbyFragment(), "lobby");
+        LobbyFragment lobbyFragment = new LobbyFragment();
+        makeTransaction(lobbyFragment, "lobby");
     }
 
     private void makeTransaction(Fragment fragment, String tag) {
@@ -324,6 +395,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
         // Commit the transaction
         transaction.commit();
+    }
+
+    @Override
+    public void onLobbyInflated() {
+        playerListFragment = (PlayerInfoFragment) getSupportFragmentManager().findFragmentByTag("lobby").getChildFragmentManager().findFragmentById(R.id.detail);
+        if (playerListFragment != null) {
+            playerListFragment.setPlayers(allPlayers);
+        }
     }
 
     private void setAvailableColors() {

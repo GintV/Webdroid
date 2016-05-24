@@ -25,5 +25,6 @@
     <string name="calibrate">Calib.</string>
     <string name="name">Name</string>
     <string name="initials_hint">INI</string>
+    <string name="waiting_connection">Waiting for connection</string>
 
 </resources>

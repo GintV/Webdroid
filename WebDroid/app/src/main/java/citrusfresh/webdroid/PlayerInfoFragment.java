@@ -1,12 +1,23 @@
 package citrusfresh.webdroid;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -50,6 +61,53 @@ public class PlayerInfoFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void setPlayers(ArrayList<Data> players) {
+        final ArrayList<Data> playersList = players;
+        ArrayList<String> strings = new ArrayList<>();
+        for(Data d : playersList) {
+            strings.add("");
+        }
+        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.player_list_item, strings) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view;
+                if (convertView == null) {
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    view = inflater.inflate(R.layout.player_list_item, parent, false);
+                } else {
+                    view = convertView;
+                }
+                ImageView readyView = (ImageView) view.findViewById(R.id.imageViewReady);
+                ImageView colorView = (ImageView) view.findViewById(R.id.imageViewListColor);
+                TextView name = (TextView) view.findViewById(R.id.textViewPlayerName);
+                TextView initials = (TextView) view.findViewById(R.id.textViewPlayerIni);
+                Data playerData = playersList.get(position);
+                if (playerData.getPlayerInfoChange().isPlayerIsReady()) {
+                    readyView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ready_circle, null));
+                }
+                else {
+                    readyView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.not_ready_circle, null));
+                }
+                Drawable colorCircle = ResourcesCompat.getDrawable(getResources(), R.drawable.color_circle, null);
+                if (colorCircle != null) {
+                    colorCircle = colorCircle.mutate();
+                    colorCircle.setColorFilter(Color.parseColor(playerData.getPlayerInfoChange().getPlayerColor()), PorterDuff.Mode.SRC_IN);
+                    colorView.setImageDrawable(colorCircle);
+                }
+                name.setText(playerData.getPlayerInfoChange().getPlayerName());
+                initials.setText(playerData.getPlayerInfoChange().getPlayerInitials());
+                return view;
+            }
+        };
+        View v = getView();
+        if (v != null) {
+            ListView listView = (ListView) v.findViewById(R.id.listView);;
+            if (listView != null) {
+                listView.setAdapter(adapter);
+            }
+        }
     }
 
     /**
