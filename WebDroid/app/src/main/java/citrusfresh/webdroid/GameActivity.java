@@ -55,17 +55,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        ((TextView) findViewById(R.id.textViewWaiting)).setText("");
-        allPlayers = new ArrayList<>();
 
         availableColors = new ArrayList<>();
-        availableColors.add("#fdb913");
-        availableColors.add("#006a44");
-        availableColors.add("#c1272d");
 
-        allPlayers.add(new Data("Jonas", "JV", "#fdb913", true));
-        allPlayers.add(new Data("Petronis", "PPP", "#006a44", false));
-        allPlayers.add(new Data("Antantas", "TON", "#c1272d", true));
+        allPlayers = new ArrayList<>();
 
         String sessionId = getIntent().getStringExtra("sessionId");
         thisPlayer.setSessionID(sessionId);
@@ -97,8 +90,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
             if (savedInstanceState != null) {
                 return;
             }
-
-            switchToLobby();
         }
     }
 
@@ -226,7 +217,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         } else {
             in = false;
         }
-        switchToGame();
     }
 
     @Override
@@ -306,7 +296,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                             public void run() {
                                 Toast toast = Toast.makeText(getApplicationContext(), err.getErrorText(), Toast.LENGTH_LONG);
                                 toast.show();
-                                //finish();
+                                finish();
                             }
                         };
                         synchronized (webSocketLock) {
@@ -324,7 +314,12 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     try {
                         allColors = mapper.readValue(dataPart, String[].class);
                         setAvailableColors();
-                        ((TextView) findViewById(R.id.textViewWaiting)).setText("");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((TextView) findViewById(R.id.textViewWaiting)).setText("");
+                            }
+                        });
                         switchToLobby();
                     } catch (IOException e) {
                         e.printStackTrace();
