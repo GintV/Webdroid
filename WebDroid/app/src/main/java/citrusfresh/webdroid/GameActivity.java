@@ -30,9 +30,9 @@ import java.util.TimerTask;
 
 public class GameActivity extends FragmentActivity implements SetUpFragment.OnPlayerInfoChangeListener, LobbyFragment.OnLobbyInflatedListener {
 
-    private final int SEND_RATE = 10;
+    private final int SEND_RATE = 5;
 
-    private WebSocketControl webSocket;
+    private static WebSocketControl webSocket;
     private final Object webSocketLock = new Object();
     private SensorManager sm;
     private SensorEventListener rotListener;
@@ -81,21 +81,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
             }
         };
-
-        if (findViewById(R.id.fragment_container_game) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-        }
+        sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
+        sm.unregisterListener(rotListener);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        ((TextView) findViewById(R.id.textViewWaiting)).setText(getResources().getString(R.string.waiting_connection));
         // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
         try {
             if (webSocket == null || !webSocket.isConnected()) {
@@ -135,6 +128,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     }
                 }
                 */
+            }
+            else {
+                ((TextView) findViewById(R.id.textViewWaiting)).setText("");
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();

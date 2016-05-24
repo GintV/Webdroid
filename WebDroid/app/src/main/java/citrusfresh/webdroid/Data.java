@@ -55,15 +55,15 @@ public class Data {
     private NewPlayer newPlayer;
 
     private class PlayerPosition{
-        private double playerPositionX;
-        private double playerPositionY;
+        private double x;
+        private double y;
 
-        public double getPlayerPositionX() {
-            return playerPositionX;
+        public double getX() {
+            return x;
         }
 
-        public double getPlayerPositionY() {
-            return playerPositionY;
+        public double getY() {
+            return y;
         }
 
         public PlayerPosition(){
@@ -71,8 +71,8 @@ public class Data {
         }
 
         public void update(){
-            this.playerPositionX = playerPositionX_;
-            this.playerPositionY = playerPositionY_;
+            this.x = playerPositionX_;
+            this.y = playerPositionY_;
         }
     }
 
@@ -134,10 +134,9 @@ public class Data {
 
 
     public Data(){
-        this.random = new Random();
 
         this.sessionID_ = "";
-        this.playerName_ = "Player" + random.nextInt(9999);
+        this.playerName_ = "";
         this.playerInitials_ = "";
         this.playerColor_ = "random";
         this.playerPositionX_ = 0.0;

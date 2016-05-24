@@ -84,6 +84,7 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
         Data.PlayerInfoChange playerInfo = mListener.getPlayerInfo();
         name.setText(playerInfo.getPlayerName());
         initials.setText(playerInfo.getPlayerInitials());
+        readyCnt = 0;
 
         return layout;
     }

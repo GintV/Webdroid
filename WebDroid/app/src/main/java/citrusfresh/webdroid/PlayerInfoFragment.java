@@ -69,7 +69,7 @@ public class PlayerInfoFragment extends Fragment {
         for(Data d : playersList) {
             strings.add("");
         }
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.player_list_item, strings) {
+        final ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.player_list_item, strings) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view;
@@ -103,9 +103,14 @@ public class PlayerInfoFragment extends Fragment {
         };
         View v = getView();
         if (v != null) {
-            ListView listView = (ListView) v.findViewById(R.id.listView);;
+            final ListView listView = (ListView) v.findViewById(R.id.listView);;
             if (listView != null) {
-                listView.setAdapter(adapter);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.setAdapter(adapter);
+                    }
+                });
             }
         }
     }
