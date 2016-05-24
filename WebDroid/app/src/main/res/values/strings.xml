@@ -26,5 +26,6 @@
     <string name="name">Name</string>
     <string name="initials_hint">INI</string>
     <string name="waiting_connection">Waiting for connection</string>
+    <string name="players_in_session">Players in session</string>
 
 </resources>

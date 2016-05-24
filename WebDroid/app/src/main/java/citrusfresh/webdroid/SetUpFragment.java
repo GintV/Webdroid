@@ -159,7 +159,7 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
                     public void onClick(DialogInterface arg0, int arg1) {
                         if (availableColors.contains(selectedColor)) {
                             color.getDrawable().mutate().setColorFilter(Color.parseColor(selectedColor), PorterDuff.Mode.SRC_IN);
-                            mListener.onColorChange(selectedColor);
+                            mListener.onColorChange(name.getText().toString(), initials.getText().toString(), selectedColor, ready.isChecked());
                         }
                         else {
                             selectedColor = previousColor;
@@ -243,7 +243,7 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
     public interface OnPlayerInfoChangeListener {
         void onPlayerInfoChange(String name, String initials, String color, boolean isReady, boolean isCalibrating);
         ArrayList<String> getAvailableColors();
-        void onColorChange(String color);
+        void onColorChange(String name, String initials, String color, boolean isReady);
         Data.PlayerInfoChange getPlayerInfo();
     }
 }

@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 public class GameActivity extends FragmentActivity implements SetUpFragment.OnPlayerInfoChangeListener, LobbyFragment.OnLobbyInflatedListener {
 
-    private final int SEND_RATE = 7;
+    private final int SEND_RATE = 8;
 
     private static WebSocketControl webSocket;
     private final Object webSocketLock = new Object();
@@ -128,7 +128,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         if(currentStatus.equals("lobby")) {
             switchToLobby();
         }
-        Log.i("Websocket", currentStatus);
+        else {
+            switchToGame();
+        }
     }
 
     @Override
@@ -223,8 +225,11 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     @Override
-    public void onColorChange(String color) {
+    public void onColorChange(String name, String initials, String color, boolean isReady) {
+        thisPlayer.setPlayerName(name);
+        thisPlayer.setPlayerInitials(initials);
         thisPlayer.setPlayerColor(color);
+        thisPlayer.setPlayerIsReady(isReady);
         Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
         String data = toSend.toJSON();
         if (webSocket.isConnected()) {
@@ -339,10 +344,27 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     int indexStart = dataPart.indexOf("\"status\":");
                     index = dataPart.indexOf("\",");
                     String status = dataPart.substring(indexStart + 10, index);
-                    Log.i("Websocket", status);
                     if (!status.equals(currentStatus)) {
                         switch (status) {
                             case "lobby":
+                                switchToLobby();
+                                break;
+                            case "running":
+                                if(!initializedColor) {
+                                    Runnable showToast = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Game is already running", Toast.LENGTH_LONG);
+                                            toast.show();
+                                            finish();
+                                        }
+                                    };
+                                    synchronized (webSocketLock) {
+                                        webSocket.close();
+                                    }
+                                    runOnUiThread(showToast);
+                                }
+                                switchToGame();
                                 break;
                         }
                     }
@@ -350,7 +372,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     indexStart = index + 12;
                     index = dataPart.indexOf("]}");
                     String playerArrayJSON = dataPart.substring(indexStart, index + 1);
-                    Log.i("Websocket", playerArrayJSON);
                     try {
                         Player[] players = mapper.readValue(playerArrayJSON, Player[].class);
                         allPlayers.clear();
