@@ -6,9 +6,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 
@@ -80,12 +82,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 return;
             }
 
-            // Create a new Fragment to be placed in the activity layout
-            LobbyFragment firstFragment = new LobbyFragment();
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container_game, firstFragment).commit();
+            switchToLobby();
         }
     }
 
@@ -94,24 +91,8 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         super.onResume();
         // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
         try {
-            webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
-                @Override
-                public void onMessage(String message) {
-                    handleWebSocketMessage(message);
-                }
-
-                @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    super.onOpen(handshakedata);
-                    handleOnOpen();
-                }
-            };
-            synchronized (webSocketLock) {
-                webSocket.connect();
-            }
-            Thread.sleep(500);
-            if (!webSocket.isConnected()) {
-                webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
+            if (webSocket == null || !webSocket.isConnected()) {
+                webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
                     @Override
                     public void onMessage(String message) {
                         handleWebSocketMessage(message);
@@ -125,6 +106,25 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 };
                 synchronized (webSocketLock) {
                     webSocket.connect();
+                }
+                Thread.sleep(500);
+
+                if (!webSocket.isConnected()) {
+                    webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
+                        @Override
+                        public void onMessage(String message) {
+                            handleWebSocketMessage(message);
+                        }
+
+                        @Override
+                        public void onOpen(ServerHandshake handshakedata) {
+                            super.onOpen(handshakedata);
+                            handleOnOpen();
+                        }
+                    };
+                    synchronized (webSocketLock) {
+                        webSocket.connect();
+                    }
                 }
             }
         } catch (URISyntaxException e) {
@@ -207,6 +207,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         } else {
             in = false;
         }
+        switchToGame();
     }
 
     @Override
@@ -224,6 +225,11 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 webSocket.send(data);
             }
         }
+    }
+
+    @Override
+    public Data.PlayerInfoChange getPlayerInfo() {
+        return thisPlayer.getPlayerInfoChange();
     }
 
     private void calculateRotation(float[] values) {
@@ -282,6 +288,40 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         }
         if (thisPlayer.getPlayerIsReady()) {
             startTimerTask();
+        }
+    }
+
+    private void switchToGame() {
+        makeTransaction(InGameFragment.newInstance(thisPlayer.getPlayerInfoChange().getPlayerColor()), "game");
+    }
+
+    private void switchToLobby() {
+        makeTransaction(new LobbyFragment(), "lobby");
+    }
+
+    private void makeTransaction(Fragment fragment, String tag) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.replace(R.id.fragment_container_game, fragment, tag);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    private void setAvailableColors() {
+        availableColors.clear();
+        for (String c : allColors) {
+            boolean found = false;
+            for (Data d : allPlayers) {
+                if (d.getPlayerInfoChange().getPlayerColor().equals(c) &&
+                        !thisPlayer.getPlayerInfoChange().getPlayerColor().equals(c)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                availableColors.add(c);
+            }
         }
     }
 }

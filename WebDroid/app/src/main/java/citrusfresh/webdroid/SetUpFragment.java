@@ -89,8 +89,11 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
         super.onAttach(context);
         if (context instanceof OnPlayerInfoChangeListener) {
             mListener = (OnPlayerInfoChangeListener) context;
+            Data.PlayerInfoChange playerInfo = mListener.getPlayerInfo();
+            selectedColor = playerInfo.getPlayerColor();
+            name.setText(playerInfo.getPlayerName());
+            initials.setText(playerInfo.getPlayerInitials());
             availableColors = mListener.getAvailableColors();
-            selectedColor = availableColors.get(0);
             previousColor = selectedColor;
         } else {
             throw new RuntimeException(context.toString()
@@ -230,9 +233,9 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnPlayerInfoChangeListener {
-        // TODO: Update argument type and name
         void onPlayerInfoChange(String name, String initials, String color, boolean isReady, boolean isCalibrating);
         ArrayList<String> getAvailableColors();
         void onColorChange(String color);
+        Data.PlayerInfoChange getPlayerInfo();
     }
 }

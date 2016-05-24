@@ -78,7 +78,7 @@ public class Data {
 
     private PlayerPosition playerPosition;
 
-    private class PlayerInfoChange {
+    public class PlayerInfoChange {
         private String playerName;
         private String playerInitials;
         private String playerColor;

@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:id="@+id/imageView2"
-        android:background="@drawable/game_circle"
+        android:id="@+id/gameCircle"
+        android:src="@drawable/game_circle"
         android:layout_gravity="center" />
 </FrameLayout>
