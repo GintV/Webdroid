@@ -137,8 +137,8 @@ public class Data {
         this.random = new Random();
 
         this.sessionID_ = "";
-        this.playerName_ = "player" + random.nextInt(9999);
-        this.playerInitials_ = " ";
+        this.playerName_ = "Player" + random.nextInt(9999);
+        this.playerInitials_ = "";
         this.playerColor_ = "random";
         this.playerPositionX_ = 0.0;
         this.playerPositionY_ = 0.0;

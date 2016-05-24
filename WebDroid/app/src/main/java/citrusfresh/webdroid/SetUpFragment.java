@@ -81,6 +81,10 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
         update.setOnClickListener(this);
         name = (EditText) layout.findViewById(R.id.editTextName);
         initials = (EditText) layout.findViewById(R.id.editTextInitials);
+        Data.PlayerInfoChange playerInfo = mListener.getPlayerInfo();
+        name.setText(playerInfo.getPlayerName());
+        initials.setText(playerInfo.getPlayerInitials());
+
         return layout;
     }
 
@@ -91,8 +95,6 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
             mListener = (OnPlayerInfoChangeListener) context;
             Data.PlayerInfoChange playerInfo = mListener.getPlayerInfo();
             selectedColor = playerInfo.getPlayerColor();
-            name.setText(playerInfo.getPlayerName());
-            initials.setText(playerInfo.getPlayerInitials());
             availableColors = mListener.getAvailableColors();
             previousColor = selectedColor;
         } else {

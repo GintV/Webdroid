@@ -14,8 +14,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -54,6 +57,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
         String sessionId = getIntent().getStringExtra("sessionId");
         thisPlayer.setSessionID(sessionId);
+        thisPlayer.setPlayerColor("#fdb913");
         firstConnect = true;
         timer = new Timer();
         rotationMatrix = new float[9];
@@ -155,7 +159,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     public void onDestroy() {
         timer.cancel();
         timer.purge();
-        webSocket.close();
+        //webSocket.close();
         super.onDestroy();
     }
 
@@ -207,7 +211,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         } else {
             in = false;
         }
-        switchToGame();
     }
 
     @Override
@@ -270,6 +273,21 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     private void handleWebSocketMessage(String message) {
         Log.i("Websocket", message);
+        Packet received = Packet.fromJSON(message);
+        if (received != null) {
+            //ErrorMessage err = (ErrorMessage) received.getData();
+            Log.i("Websocket", "valio");
+            int index = message.indexOf("\"data\":");
+            String dataPart = message.substring(index + 7, message.length() - 1);
+            Log.i("Websocket", dataPart);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                ErrorMessage err = mapper.readValue(dataPart, ErrorMessage.class);
+                Log.i("Websocket", err.getErrorText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // TODO siusti zaidejo ID, jei ne pirmas connection

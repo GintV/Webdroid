@@ -1,8 +1,12 @@
 package citrusfresh.webdroid;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
+import java.io.IOException;
 
 /**
  * Created by Gintaras on 2016.05.15.
@@ -50,6 +54,17 @@ public class Packet {
             e.printStackTrace();
         }
         return jsonString;
+    }
+
+    @Nullable
+    static public Packet fromJSON(String jsonString) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonString, Packet.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
