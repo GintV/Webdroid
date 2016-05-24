@@ -49,7 +49,6 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
 
     public SetUpFragment() {
         // Required empty public constructor
-        readyCnt = 0;
     }
 
     /**
@@ -84,7 +83,13 @@ public class SetUpFragment extends Fragment implements View.OnClickListener {
         Data.PlayerInfoChange playerInfo = mListener.getPlayerInfo();
         name.setText(playerInfo.getPlayerName());
         initials.setText(playerInfo.getPlayerInitials());
-        readyCnt = 0;
+        if (playerInfo.isPlayerIsReady()) {
+            readyCnt = 1;
+            ready.setChecked(true);
+        }
+        else {
+            readyCnt = 0;
+        }
 
         return layout;
     }

@@ -2,14 +2,14 @@ package citrusfresh.webdroid;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import java.util.TimerTask;
 
 public class GameActivity extends FragmentActivity implements SetUpFragment.OnPlayerInfoChangeListener, LobbyFragment.OnLobbyInflatedListener {
 
-    private final int SEND_RATE = 5;
+    private final int SEND_RATE = 7;
 
     private static WebSocketControl webSocket;
     private final Object webSocketLock = new Object();
@@ -41,7 +42,11 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     protected PositionFromRotation positionFromRotation;
     protected boolean in;
     private static Timer timer;
-    private boolean firstConnect;
+    private String currentStatus;
+    private boolean colorsReceived;
+    private boolean playersReceived;
+    private boolean initializedColor;
+
 
     private PlayerInfoFragment playerListFragment;
 
@@ -55,15 +60,17 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ((TextView) findViewById(R.id.textViewWaiting)).setText(getResources().getString(R.string.waiting_connection));
 
         availableColors = new ArrayList<>();
-
         allPlayers = new ArrayList<>();
+        colorsReceived = false;
+        playersReceived = false;
+        initializedColor = false;
+        currentStatus = "";
 
         String sessionId = getIntent().getStringExtra("sessionId");
         thisPlayer.setSessionID(sessionId);
-        thisPlayer.setPlayerColor("#fdb913");
-        firstConnect = true;
         timer = new Timer();
         rotationMatrix = new float[9];
         positionFromRotation = new PositionFromRotation();
@@ -88,10 +95,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     @Override
     public void onResume() {
         super.onResume();
-        ((TextView) findViewById(R.id.textViewWaiting)).setText(getResources().getString(R.string.waiting_connection));
-        // TODO inicializuoti web socketa onCreate, onResume palikti tik connect
-        try {
-            if (webSocket == null || !webSocket.isConnected()) {
+        sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
+        if (webSocket == null || webSocket.getReadyState() == WebSocket.READYSTATE.CLOSED) {
+            try {
                 webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
                     @Override
                     public void onMessage(String message) {
@@ -104,44 +110,37 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                         handleOnOpen();
                     }
                 };
-                synchronized (webSocketLock) {
-                    webSocket.connect();
-                }
-                /*
-                Thread.sleep(500);
-
-                if (!webSocket.isConnected()) {
-                    webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
-                        @Override
-                        public void onMessage(String message) {
-                            handleWebSocketMessage(message);
-                        }
-
-                        @Override
-                        public void onOpen(ServerHandshake handshakedata) {
-                            super.onOpen(handshakedata);
-                            handleOnOpen();
-                        }
-                    };
-                    synchronized (webSocketLock) {
-                        webSocket.connect();
-                    }
-                }
-                */
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
-            else {
-                ((TextView) findViewById(R.id.textViewWaiting)).setText("");
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         }
+        synchronized (webSocketLock) {
+            if (webSocket != null && webSocket.getReadyState() != WebSocket.READYSTATE.OPEN) {
+                webSocket.connect();
+            }
+        }
+        if (webSocket != null && webSocket.getReadyState() == WebSocket.READYSTATE.OPEN) {
+            ((TextView) findViewById(R.id.textViewWaiting)).setText("");
+            if (thisPlayer.getPlayerIsReady()) {
+                startTimerTask();
+            }
+        }
+        if(currentStatus.equals("lobby")) {
+            switchToLobby();
+        }
+        Log.i("Websocket", currentStatus);
+    }
 
-        sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onPause() {
         sm.unregisterListener(rotListener);
+        thisPlayer.setPlayerIsReady(false);
         timer.cancel();
         timer.purge();
         super.onPause();
@@ -158,7 +157,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     public void onDestroy() {
         timer.cancel();
         timer.purge();
-        //webSocket.close();
+        webSocket.close();
         super.onDestroy();
     }
 
@@ -193,6 +192,9 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer.setPlayerIsCalibrating(isCalibrating);
 
         if (!isCalibrating) {
+            if (isReady) {
+                in = false;
+            }
             Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
             String data = toSend.toJSON();
             if (webSocket.isConnected()) {
@@ -280,11 +282,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
             ObjectMapper mapper = new ObjectMapper();
             int index;
             String dataPart;
-            switch(received.getType()) {
+            switch (received.getType()) {
                 case "error":
                     index = message.indexOf("\"data\":");
                     dataPart = message.substring(index + 7, message.length() - 1);
-                    Log.i("Websocket", dataPart);
                     try {
                         final ErrorMessage err = mapper.readValue(dataPart, ErrorMessage.class);
                         Runnable showToast = new Runnable() {
@@ -306,7 +307,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 case "colors":
                     index = message.indexOf("\"data\":");
                     dataPart = message.substring(index + 7, message.length() - 1);
-                    Log.i("Websocket", dataPart);
                     try {
                         allColors = mapper.readValue(dataPart, String[].class);
                         setAvailableColors();
@@ -316,7 +316,19 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                                 ((TextView) findViewById(R.id.textViewWaiting)).setText("");
                             }
                         });
-                        switchToLobby();
+                        colorsReceived = true;
+                        if (!initializedColor && playersReceived) {
+                            initializedColor = true;
+                            thisPlayer.setPlayerColor(availableColors.get(0));
+                            Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+                            String data = toSend.toJSON();
+                            if (webSocket.isConnected()) {
+                                synchronized (webSocketLock) {
+                                    webSocket.send(data);
+                                }
+                            }
+                            switchToLobby();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -324,22 +336,43 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 case "gameInfo":
                     index = message.indexOf("\"data\":");
                     dataPart = message.substring(index + 7, message.length() - 1);
-                    Log.i("Websocket", dataPart);
                     int indexStart = dataPart.indexOf("\"status\":");
                     index = dataPart.indexOf("\",");
                     String status = dataPart.substring(indexStart + 10, index);
+                    Log.i("Websocket", status);
+                    if (!status.equals(currentStatus)) {
+                        switch (status) {
+                            case "lobby":
+                                break;
+                        }
+                    }
+                    currentStatus = status;
                     indexStart = index + 12;
-                    index = dataPart.indexOf("\"}]") + 3;
-                    String playerArrayJSON = dataPart.substring(indexStart, index);
+                    index = dataPart.indexOf("]}");
+                    String playerArrayJSON = dataPart.substring(indexStart, index + 1);
+                    Log.i("Websocket", playerArrayJSON);
                     try {
                         Player[] players = mapper.readValue(playerArrayJSON, Player[].class);
                         allPlayers.clear();
-                        for(Player p : players) {
+                        for (Player p : players) {
                             allPlayers.add(new Data(p.getName(), p.getInitials(), p.getColor(), p.isReady()));
                         }
                         setAvailableColors();
                         if (playerListFragment != null) {
                             playerListFragment.setPlayers(allPlayers);
+                        }
+                        playersReceived = true;
+                        if (!initializedColor && colorsReceived) {
+                            initializedColor = true;
+                            thisPlayer.setPlayerColor(availableColors.get(0));
+                            Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+                            String data = toSend.toJSON();
+                            if (webSocket.isConnected()) {
+                                synchronized (webSocketLock) {
+                                    webSocket.send(data);
+                                }
+                            }
+                            switchToLobby();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -352,20 +385,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
     }
 
     private void handleOnOpen() {
-        if (firstConnect) {
-            firstConnect = false;
-            Packet toSend = new Packet();
-            toSend.setType(Packet.TYPE_NEW_CONNECTION);
-            toSend.setData(thisPlayer.getNewConnection());
-            String data = toSend.toJSON();
-            if (data != null) {
-                synchronized (webSocketLock) {
-                    webSocket.send(data);
-                }
+        Packet toSend = new Packet();
+        toSend.setType(Packet.TYPE_NEW_CONNECTION);
+        toSend.setData(thisPlayer.getNewConnection());
+        String data = toSend.toJSON();
+        if (data != null) {
+            synchronized (webSocketLock) {
+                webSocket.send(data);
             }
-        }
-        if (thisPlayer.getPlayerIsReady()) {
-            startTimerTask();
         }
     }
 
