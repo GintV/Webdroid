@@ -229,7 +229,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         thisPlayer.setPlayerName(name);
         thisPlayer.setPlayerInitials(initials);
         thisPlayer.setPlayerColor(color);
-        thisPlayer.setPlayerIsReady(isReady);
+        thisPlayer.setPlayerIsReady(false);
         Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
         String data = toSend.toJSON();
         if (webSocket.isConnected()) {

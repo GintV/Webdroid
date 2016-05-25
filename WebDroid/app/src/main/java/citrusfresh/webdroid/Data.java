@@ -223,5 +223,6 @@ public class Data {
 
     public void setPlayerIsReady(boolean isPlayerReady) {
         this.playerIsReady_ = isPlayerReady;
+        this.playerInfoChange.update();
     }
 }
