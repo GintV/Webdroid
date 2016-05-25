@@ -10,7 +10,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
@@ -367,6 +366,20 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                                     }
                                     runOnUiThread(showToast);
                                 }
+                                if (!thisPlayer.getPlayerIsReady()) {
+                                    Runnable showToast = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Game is starting and You are not ready", Toast.LENGTH_LONG);
+                                            toast.show();
+                                            finish();
+                                        }
+                                    };
+                                    synchronized (webSocketLock) {
+                                        webSocket.close();
+                                    }
+                                    runOnUiThread(showToast);
+                                }
                                 thisPlayer.setPlayerIsReady(false);
                                 Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
                                 String data = toSend.toJSON();
@@ -405,21 +418,6 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                                             gameStatus.setText(R.string.game_starting);
                                         }
                                     });
-                                }
-                                Fragment setUp = lobbyFragment.getChildFragmentManager().findFragmentById(R.id.input);
-                                if (setUp != null) {
-                                    v = setUp.getView();
-                                    if (v != null) {
-                                        final ToggleButton toggle = (ToggleButton) v.findViewById(R.id.buttonReady);
-                                        if (toggle != null) {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    toggle.setEnabled(false);
-                                                }
-                                            });
-                                        }
-                                    }
                                 }
                             }
                         }
