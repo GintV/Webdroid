@@ -125,10 +125,10 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                 startTimerTask();
             }
         }
-        if(currentStatus.equals("lobby")) {
+        if(currentStatus.equals("lobby") && !thisPlayer.getPlayerInfoChange().getPlayerColor().equals("")) {
             switchToLobby();
         }
-        else {
+        else if(currentStatus.equals("running") && !thisPlayer.getPlayerInfoChange().getPlayerColor().equals("")) {
             switchToGame();
         }
     }

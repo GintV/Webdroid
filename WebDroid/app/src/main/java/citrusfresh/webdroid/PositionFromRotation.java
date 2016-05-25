@@ -39,7 +39,7 @@ public class PositionFromRotation {
         this.relativeRotationMatrix = new float[9];
         this.pointer = new Pointer();
 
-        this.pointer.sensitivity = 1;
+        this.pointer.sensitivity = 2;
         this.pointer.pointerType = LINEAR_POINTER;
     }
     public PositionFromRotation(float[] rotationMatrix, int sensitivity, boolean pointerType) {

@@ -138,7 +138,7 @@ public class Data {
         this.sessionID_ = "";
         this.playerName_ = "";
         this.playerInitials_ = "";
-        this.playerColor_ = "random";
+        this.playerColor_ = "#FFFFFF";
         this.playerPositionX_ = 0.0;
         this.playerPositionY_ = 0.0;
         this.playerIsCalibrating_ = false;
