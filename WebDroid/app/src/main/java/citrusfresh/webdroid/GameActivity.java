@@ -364,6 +364,14 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                                     }
                                     runOnUiThread(showToast);
                                 }
+                                thisPlayer.setPlayerIsReady(false);
+                                Packet toSend = new Packet(Packet.TYPE_PLAYER_INFO_CHANGE, thisPlayer.getPlayerInfoChange());
+                                String data = toSend.toJSON();
+                                if (webSocket.isConnected()) {
+                                    synchronized (webSocketLock) {
+                                        webSocket.send(data);
+                                    }
+                                }
                                 switchToGame();
                                 break;
                         }
