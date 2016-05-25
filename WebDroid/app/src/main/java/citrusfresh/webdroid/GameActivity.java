@@ -10,12 +10,15 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -98,7 +101,7 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
         sm.registerListener(rotListener, rotation, SensorManager.SENSOR_DELAY_FASTEST);
         if (webSocket == null || webSocket.getReadyState() == WebSocket.READYSTATE.CLOSED) {
             try {
-                webSocket = new WebSocketControl(new URI(getString(R.string.testServer))) {
+                webSocket = new WebSocketControl(new URI(getString(R.string.mainServer))) {
                     @Override
                     public void onMessage(String message) {
                         handleWebSocketMessage(message);
@@ -382,9 +385,43 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
                     String playerArrayJSON = dataPart.substring(indexStart, index + 1);
                     try {
                         Player[] players = mapper.readValue(playerArrayJSON, Player[].class);
+                        boolean isEveryoneReady = true;
                         allPlayers.clear();
                         for (Player p : players) {
                             allPlayers.add(new Data(p.getName(), p.getInitials(), p.getColor(), p.isReady()));
+                            if(!p.isReady()) {
+                                isEveryoneReady = false;
+                            }
+                        }
+                        if (isEveryoneReady && currentStatus.equals("lobby")) {
+                            Fragment lobbyFragment = getSupportFragmentManager().findFragmentByTag("lobby");
+                            if (lobbyFragment != null) {
+                                View v = lobbyFragment.getView();
+                                if (v != null) {
+                                    final TextView gameStatus = (TextView) v.findViewById(R.id.textViewGameStatus);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            gameStatus.setText(R.string.game_starting);
+                                        }
+                                    });
+                                }
+                                Fragment setUp = lobbyFragment.getChildFragmentManager().findFragmentById(R.id.input);
+                                if (setUp != null) {
+                                    v = setUp.getView();
+                                    if (v != null) {
+                                        final ToggleButton toggle = (ToggleButton) v.findViewById(R.id.buttonReady);
+                                        if (toggle != null) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    toggle.setEnabled(false);
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
                         }
                         setAvailableColors();
                         if (playerListFragment != null) {
@@ -432,6 +469,16 @@ public class GameActivity extends FragmentActivity implements SetUpFragment.OnPl
 
     private void switchToLobby() {
         LobbyFragment lobbyFragment = new LobbyFragment();
+        View v = lobbyFragment.getView();
+        if (v != null) {
+            final TextView gameStatus = (TextView) v.findViewById(R.id.textViewGameStatus);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    gameStatus.setText(R.string.waiting_for_players);
+                }
+            });
+        }
         makeTransaction(lobbyFragment, "lobby");
     }
 
