@@ -1,12 +1,12 @@
 # webdroid
 A web/android project
 
-Project, that was developed for university module.
+Project, that was developed for a university module.
 
-Main project idea was to create a game, that could be played on browser and could be controlled with smart phone.
+The main project idea was to create a game that could be played on a browser and could be controlled with a smart phone.
 
-So we created a simple game, where the goal is to color the biggest plot of screen. 
+So we created a simple game where the goal is to color as much space of the screen as possible with you chosen color. 
 
-Game is available at webdroid.cf. To start playing, you need to download and install android application.
+The game interface is available on webdroid.cf. To start playing, you need to download and install the android application.
 
 Enjoy!
