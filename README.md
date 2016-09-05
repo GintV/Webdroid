@@ -7,6 +7,6 @@ Main project idea was to create a game, that could be played on browser and coul
 
 So we created a simple game, where the goal is to color the biggest amount of screen. 
 
-Game is available at webdroid.cf. To start playing, you need to download and install android aplication.
+Game is available at webdroid.cf. To start playing, you need to download and install android application.
 
 Enjoy!
