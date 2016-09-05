@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <link rel="icon" href="/logo.png">
+        <link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <script type="text/javascript" src="/javascripts/jquery-2.2.3.min.js" ></script>
+        <script type="text/javascript" src="/javascripts/jquery.qrcode.min.js" ></script>
+        <script type="text/javascript" src="/javascripts/wsc.js" ></script>
+        <script type="text/javascript" src="/javascripts/game.js" ></script>
+    </head>
+    <body>
+        <canvas id="theGame" width="100vw"></canvas>
+        <div id="timer"></div>
+        <div id="infoLayer">
+            <div class="infoBox" id="fullScreenPrompt">
+                <div class="textBig w100">Enter fullscreen?</div>
+                <div class="buttons w100">
+                    <div class="button yes">Yes</div>
+                    <div class="button no">No</div>
+                </div>
+            </div>
+            <div class="infoBox hidden" id="QR"></div>
+            <div class="infoBox hidden" id="preTimer">
+                <div class="textBig w100">Game will start in</div>
+                <div class="textBig w100 preTime"></div>
+            </div>
+        </div>
+        <div id="menu" class="hidden">
+            <div id="stats">
+                <div id="time">Time left: 00:00</div>
+                <div id="fps">FPS: 0</div>
+                <div id="mps">MPS: 0</div>
+            </div>
+        </div>
+    </body>
+</html>
