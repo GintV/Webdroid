@@ -7,6 +7,6 @@ The main project idea was to create a game that could be played on a browser and
 
 So we created a simple game where the goal is to color as much space of the screen as possible with you chosen color. 
 
-The game interface is available on webdroid.cf. To start playing, you need to download and install the android application.
+The game screen is available on webdroid.cf. To start playing, you need to download and install the android application.
 
 Enjoy!
