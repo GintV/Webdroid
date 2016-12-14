@@ -1,4 +1,4 @@
-# webdroid
+# Webdroid
 A web/android project
 
 Project, that was developed for a university module.
